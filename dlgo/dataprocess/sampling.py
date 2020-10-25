@@ -12,7 +12,7 @@ from six.moves import range
 class Sampler:
     """Sample training and test dataprocess from zipped sgf files such that test dataprocess is kept stable."""
 
-    def __init__(self, data_dir="dataprocess", num_test_games=100, cap_year=2015, seed=1337):
+    def __init__(self, data_dir="../../examples/data", num_test_games=100, cap_year=2015, seed=1337):
         self.data_dir = data_dir
         self.num_test_games = num_test_games
         self.test_games = []

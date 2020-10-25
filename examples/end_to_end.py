@@ -17,7 +17,7 @@ def end_to_end():
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
     processor = GoDataProcessor(encoder=encoder.name())
 
-    X, y = processor.load_go_data(num_samples=1)
+    X, y = processor.load_go_data(num_samples=100)
     input_shape = (encoder.num_planes, go_board_rows, go_board_cols)
     model = Sequential()
     network_layers = large.layers(input_shape)
