@@ -60,6 +60,6 @@ body {
   }
 }
 
-#board {
-  transform: scale(0.5) translate(0, -500px);
-}
+/*#board {*/
+/*  transform: scale(0.5) translate(0, -500px);*/
+/*}*/

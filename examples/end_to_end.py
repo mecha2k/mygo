@@ -5,7 +5,7 @@ from keras.layers import Dense
 from multiprocessing import freeze_support
 
 from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
-from dlgo.data.parallel_processor import GoDataProcessor
+from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.httpfront import get_web_app
 from dlgo.neuralnet import large
