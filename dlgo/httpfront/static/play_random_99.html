@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
+    />
+    <title>Board</title>
+    <link rel="stylesheet" href="style.css" />
+  </head>
+  <body>
+    <div>Engine: random bot (chapter 3)</div>
+    <div><a href="#" onclick="resetGame(event);">new game</a></div>
+    <div id="board"></div>
+    <div>
+      <div id="status">Black to play</div>
+      <div id="spinner" style="display: none" class="loader"></div>
+    </div>
+    <script src="iframeSizer.contentWindow.min.js"></script>
+
+    <script type="text/javascript" src="jgoboard-latest.js"></script>
+    <script type="text/javascript" src="large/board.js"></script>
+    <script type="text/javascript" src="goscript.js"></script>
+  </body>
+</html>
