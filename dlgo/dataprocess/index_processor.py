@@ -29,7 +29,7 @@ class KGSIndex:
         self,
         kgs_url="http://u-go.net/gamerecords/",
         index_page="kgs_index.html",
-        data_directory="../../examples/dataprocess",
+        data_directory="../../examples/data",
     ):
         """Create an index of zip files containing SGF dataprocess of actual Go Games on KGS.
 

@@ -3,7 +3,7 @@ from keras.models import Sequential
 from keras.layers.core import Dense
 from keras.utils import to_categorical
 
-from dlgo.data.parallel_processor import GoDataProcessor
+from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.neuralnet.large import layers
 
