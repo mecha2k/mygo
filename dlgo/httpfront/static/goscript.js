@@ -80,8 +80,8 @@ function stopWaiting(botmove) {
 }
 
 jsetup.setOptions({ stars: { points: 5 } })
-jsetup.create("board", function(canvas) {
-  canvas.addListener("click", function(coord, ev) {
+jsetup.create("board", function (canvas) {
+  canvas.addListener("click", function (coord, ev) {
     if (waitingForBot) {
       return
     }
@@ -112,12 +112,12 @@ jsetup.create("board", function(canvas) {
       },
       body: JSON.stringify({ board_size: BOARD_SIZE, moves: record })
     })
-      .then(function(response) {
+      .then(function (response) {
         if (!waitingForBot) {
           console.log("Got response but not waiting for one")
           return
         }
-        response.json().then(function(data) {
+        response.json().then(function (data) {
           if (data["bot_move"] === "pass" || data["bot_move"] === "resign") {
             record.push(data["bot_move"])
           } else {
@@ -127,13 +127,13 @@ jsetup.create("board", function(canvas) {
           stopWaiting(data["bot_move"])
         })
       })
-      .catch(function(error) {
+      .catch(function (error) {
         console.log(error)
         stopWaiting(data["bot_move"])
       })
   })
 
-  canvas.addListener("mousemove", function(coord) {
+  canvas.addListener("mousemove", function (coord) {
     if (coord.i === -1 || coord.j === -1 || (coord.i === lastX && coord.j === lastY)) return
 
     if (lastHover)
@@ -149,7 +149,7 @@ jsetup.create("board", function(canvas) {
     } else lastHover = false
   })
 
-  canvas.addListener("mouseout", function() {
+  canvas.addListener("mouseout", function () {
     if (lastHover) jboard.setType(new JGO.Coordinate(lastX, lastY), JGO.CLEAR)
 
     lastHover = false

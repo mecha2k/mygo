@@ -11,7 +11,7 @@
       var l = (n[o] = { exports: {} })
       t[o][0].call(
         l.exports,
-        function(e) {
+        function (e) {
           var n = t[o][1][e]
           return s(n ? n : e)
         },
@@ -31,7 +31,7 @@
 })(
   {
     1: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         //var request = require('superagent');
@@ -83,20 +83,20 @@
         //var boards = [];
 
         // Available attributes:
-        // dataprocess-jgostyle: Evaluated and used as board style
-        // dataprocess-jgosize: Used as board size unless dataprocess-jgosgf is defined
-        // dataprocess-jgoview: Used to define viewport
+        // data-jgostyle: Evaluated and used as board style
+        // data-jgosize: Used as board size unless data-jgosgf is defined
+        // data-jgoview: Used to define viewport
         function process(JGO, div) {
           // Handle special jgo-* attributes
           var style, width, height, TL, BR // last two are viewport
 
-          if (div.getAttribute("dataprocess-jgostyle")) {
+          if (div.getAttribute("data-jgostyle")) {
             /*jshint evil:true  */
-            style = eval(div.getAttribute("dataprocess-jgostyle"))
+            style = eval(div.getAttribute("data-jgostyle"))
           } else style = JGO.BOARD.medium
 
-          if (div.getAttribute("dataprocess-jgosize")) {
-            var size = div.getAttribute("dataprocess-jgosize")
+          if (div.getAttribute("data-jgosize")) {
+            var size = div.getAttribute("data-jgosize")
 
             if (size.indexOf("x") != -1) {
               width = parseInt(size.substring(0, size.indexOf("x")))
@@ -104,14 +104,14 @@
             } else width = height = parseInt(size)
           }
 
-          //if(div.getAttribute('dataprocess-jgosgf'))
+          //if(div.getAttribute('data-jgosgf'))
 
           var data = parseMarkup(div.innerHTML)
           div.innerHTML = ""
 
           if (!width) {
             // Size still missing
-            if (!data.length) return // no size or dataprocess, no board
+            if (!data.length) return // no size or data, no board
 
             height = data.length
             width = data[0].length
@@ -120,8 +120,8 @@
           var jboard = new JGO.Board(width, height)
           var jsetup = new JGO.Setup(jboard, style)
 
-          if (div.getAttribute("dataprocess-jgoview")) {
-            var tup = div.getAttribute("dataprocess-jgoview").split("-")
+          if (div.getAttribute("data-jgoview")) {
+            var tup = div.getAttribute("data-jgoview").split("-")
             TL = jboard.getCoordinate(tup[0])
             BR = jboard.getCoordinate(tup[1])
           } else {
@@ -147,7 +147,7 @@
         /**
          * Find all div elements with class 'jgoboard' and initialize them.
          */
-        exports.init = function(document, JGO) {
+        exports.init = function (document, JGO) {
           var matches = document.querySelectorAll("div.jgoboard")
 
           for (var i = 0, len = matches.length; i < len; ++i) process(JGO, matches[i])
@@ -156,7 +156,7 @@
       { "./constants": 4 }
     ],
     2: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var Coordinate = require("./coordinate")
@@ -171,7 +171,7 @@
          * @param {int} [height] The height of the board
          * @constructor
          */
-        var Board = function(width, height) {
+        var Board = function (width, height) {
           this.width = width
 
           if (height !== undefined) this.height = height
@@ -208,7 +208,7 @@
          *
          * @param {function} func A listener callback.
          */
-        Board.prototype.addListener = function(func) {
+        Board.prototype.addListener = function (func) {
           this.listeners.push(func)
         }
 
@@ -217,7 +217,7 @@
          *
          * @param {function} func A listener callback.
          */
-        Board.prototype.removeListener = function(func) {
+        Board.prototype.removeListener = function (func) {
           var index = this.listeners.indexOf(func)
           if (index != -1) this.listeners.splice(index, 1)
         }
@@ -227,7 +227,7 @@
          *
          * @param {string} s The coordinate string.
          */
-        Board.prototype.getCoordinate = function(s) {
+        Board.prototype.getCoordinate = function (s) {
           return new Coordinate(
             C.COORDINATES.indexOf(s.toUpperCase().substr(0, 1)),
             this.height - parseInt(s.substr(1))
@@ -240,7 +240,7 @@
          * @param {Coordinate} c Coordinate.
          * @returns {string} representation.
          */
-        Board.prototype.toString = function(c) {
+        Board.prototype.toString = function (c) {
           return C.COORDINATES[c.i] + (this.height - c.j)
         }
 
@@ -254,7 +254,7 @@
          * @param {int} [i2] Colunm end.
          * @param {int} [j2] Row end.
          */
-        Board.prototype.each = function(func, i1, j1, i2, j2) {
+        Board.prototype.each = function (func, i1, j1, i2, j2) {
           var c = new Coordinate()
 
           if (i1 === undefined) i1 = 0
@@ -270,9 +270,9 @@
         /**
          * Clear board.
          */
-        Board.prototype.clear = function() {
+        Board.prototype.clear = function () {
           this.each(
-            function(c) {
+            function (c) {
               this.setType(c, C.CLEAR)
               this.setMark(c, C.MARK.NONE)
             }.bind(this)
@@ -285,7 +285,7 @@
          * @param {Object} c A Coordinate or Array of them.
          * @param {Object} t New type, e.g. CLEAR, BLACK, ...
          */
-        Board.prototype.setType = function(c, t) {
+        Board.prototype.setType = function (c, t) {
           if (c instanceof Coordinate) {
             var old = this.stones[c.i][c.j]
 
@@ -294,7 +294,7 @@
             this.stones[c.i][c.j] = t
 
             var ev = { type: "type", coordinate: c, board: this, oldVal: old, newVal: t }
-            this.listeners.forEach(function(l) {
+            this.listeners.forEach(function (l) {
               l(ev)
             })
           } else if (c instanceof Array) {
@@ -308,7 +308,7 @@
          * @param {Object} c A Coordinate or Array of them.
          * @param {Object} m New mark, e.g. MARK.NONE, MARK.TRIANGLE, ...
          */
-        Board.prototype.setMark = function(c, m) {
+        Board.prototype.setMark = function (c, m) {
           if (c instanceof Coordinate) {
             var old = this.marks[c.i][c.j]
 
@@ -317,7 +317,7 @@
             this.marks[c.i][c.j] = m
 
             var ev = { type: "mark", coordinate: c, board: this, oldVal: old, newVal: m }
-            this.listeners.forEach(function(l) {
+            this.listeners.forEach(function (l) {
               l(ev)
             })
           } else if (c instanceof Array) {
@@ -331,7 +331,7 @@
          * @param {Object} c A Coordinate or an Array of them.
          * @returns {Object} Type or array of types.
          */
-        Board.prototype.getType = function(c) {
+        Board.prototype.getType = function (c) {
           var ret
 
           if (c instanceof Coordinate) {
@@ -350,7 +350,7 @@
          * @param {Object} c A Coordinate or an Array of them.
          * @returns {Object} Mark or array of marks.
          */
-        Board.prototype.getMark = function(c) {
+        Board.prototype.getMark = function (c) {
           var ret
 
           if (c instanceof Coordinate) {
@@ -369,7 +369,7 @@
          * @param {Coordinate} c The coordinate
          * @returns {Array} The array of adjacent coordinates (2-4)
          */
-        Board.prototype.getAdjacent = function(c) {
+        Board.prototype.getAdjacent = function (c) {
           var coordinates = [],
             i = c.i,
             j = c.j
@@ -389,7 +389,7 @@
          * @param {Object} t A type filter (return only matching type).
          * @returns {Object} Object with attributes 'type' and 'mark', array or false.
          */
-        Board.prototype.filter = function(c, t) {
+        Board.prototype.filter = function (c, t) {
           var ret = []
           for (var i = 0, len = c.length; i < len; ++i)
             if (this.stones[c[i].i][c[i].j] == t) ret.push(c[i])
@@ -403,7 +403,7 @@
          * @param {Object} t A type filter (return only matching type).
          * @returns {bool} True or false.
          */
-        Board.prototype.hasType = function(c, t) {
+        Board.prototype.hasType = function (c, t) {
           for (var i = 0, len = c.length; i < len; ++i)
             if (this.stones[c[i].i][c[i].j] == t) return true
           return false
@@ -416,7 +416,7 @@
          * @param {int} [overrideType] Treat current coordinate as this type.
          * @returns {Object} Two arrays of coordinates in members 'group' and 'neighbors'.
          */
-        Board.prototype.getGroup = function(coord, overrideType) {
+        Board.prototype.getGroup = function (coord, overrideType) {
           var type = overrideType || this.getType(coord),
             seen = {},
             group = [coord.copy()],
@@ -447,7 +447,7 @@
          *
          * @returns {Object} Board contents.
          */
-        Board.prototype.getRaw = function() {
+        Board.prototype.getRaw = function () {
           return {
             width: this.width,
             height: this.height,
@@ -461,7 +461,7 @@
          *
          * @param {Object} raw Board contents.
          */
-        Board.prototype.setRaw = function(raw) {
+        Board.prototype.setRaw = function (raw) {
           this.width = raw.width
           this.height = raw.height
           this.stones = raw.stones
@@ -473,14 +473,14 @@
          *
          * @returns {Object} Cloned board.
          */
-        Board.prototype.clone = function() {
+        Board.prototype.clone = function () {
           var board = new Board()
           board.setRaw(this.getRaw())
           return board
         }
 
         /**
-         * Calculate impact of a move on board. Returns a dataprocess structure outlining
+         * Calculate impact of a move on board. Returns a data structure outlining
          * validness of move (success & errorMsg) and possible captures and ko
          * coordinate.
          *
@@ -488,9 +488,9 @@
          * @param {Coordinate} coord Coordinate to play or null for pass.
          * @param {int} stone Stone to play - BLACK or WHITE.
          * @param {Coordinate} [ko] Coordinate of previous ko.
-         * @returns {Object} Move result dataprocess structure.
+         * @returns {Object} Move result data structure.
          */
-        Board.prototype.playMove = function(coord, stone, ko) {
+        Board.prototype.playMove = function (coord, stone, ko) {
           var oppType = stone == C.BLACK ? C.WHITE : C.BLACK,
             captures = [],
             adjacent,
@@ -549,7 +549,7 @@
       { "./constants": 4, "./coordinate": 5, "./util": 13 }
     ],
     3: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var C = require("./constants")
@@ -565,7 +565,7 @@
          * @param {Object} images Set of images (or false values) for drawing.
          * @constructor
          */
-        var Canvas = function(elem, opt, images) {
+        var Canvas = function (elem, opt, images) {
           /* global document */
           if (typeof elem === "string") elem = document.getElementById(elem)
 
@@ -597,7 +597,7 @@
            * @param {number} y Coordinate.
            * @returns {Coordinate} Board coordinate.
            */
-          this.getCoordinate = function(pageX, pageY) {
+          this.getCoordinate = function (pageX, pageY) {
             var bounds = canvas.getBoundingClientRect(),
               scaledX = ((pageX - bounds.left) * canvas.width) / (bounds.right - bounds.left),
               scaledY = ((pageY - bounds.top) * canvas.height) / (bounds.bottom - bounds.top)
@@ -610,7 +610,7 @@
 
           // Click handler will call all listeners passing the coordinate of click
           // and the click event
-          canvas.onclick = function(ev) {
+          canvas.onclick = function (ev) {
             var c = this.getCoordinate(ev.clientX, ev.clientY),
               listeners = this.listeners.click
 
@@ -621,7 +621,7 @@
 
           // Move handler will call all listeners passing the coordinate of move
           // whenever mouse moves over a new intersection
-          canvas.onmousemove = function(ev) {
+          canvas.onmousemove = function (ev) {
             if (!this.listeners.mousemove.length) return
 
             var c = this.getCoordinate(ev.clientX, ev.clientY),
@@ -642,7 +642,7 @@
 
           // Mouseout handler will again call all listeners of that event, no
           // coordinates will be passed of course, only the event
-          canvas.onmouseout = function(ev) {
+          canvas.onmouseout = function (ev) {
             var listeners = this.listeners.mouseout
 
             for (var l = 0; l < listeners.length; l++) listeners[l].call(this, ev)
@@ -854,7 +854,7 @@
         /**
          * Restore portion of canvas.
          */
-        Canvas.prototype.restore = function(x, y, w, h) {
+        Canvas.prototype.restore = function (x, y, w, h) {
           x = Math.floor(x)
           y = Math.floor(y)
           x = Math.max(x, 0)
@@ -872,7 +872,7 @@
          * Get X coordinate based on column.
          * @returns {number} Coordinate.
          */
-        Canvas.prototype.getX = function(i) {
+        Canvas.prototype.getX = function (i) {
           return this.gridLeft + this.opt.grid.x * i
         }
 
@@ -880,7 +880,7 @@
          * Get Y coordinate based on row.
          * @returns {number} Coordinate.
          */
-        Canvas.prototype.getY = function(j) {
+        Canvas.prototype.getY = function (j) {
           return this.gridTop + this.opt.grid.y * j
         }
 
@@ -893,7 +893,7 @@
          * @param {number} i2 Ending column to be redrawn (inclusive).
          * @param {number} j2 Ending row to be redrawn (inclusive).
          */
-        Canvas.prototype.draw = function(jboard, i1, j1, i2, j2) {
+        Canvas.prototype.draw = function (jboard, i1, j1, i2, j2) {
           i1 = Math.max(i1, this.opt.view.xOffset)
           j1 = Math.max(j1, this.opt.view.yOffset)
           i2 = Math.min(i2, this.opt.view.xOffset + this.opt.view.width - 1)
@@ -929,7 +929,7 @@
           // Clear grid for labels on clear intersections before casting shadows
           if (this.images.board) {
             // there is a board texture
-            clearFunc = function(ox, oy) {
+            clearFunc = function (ox, oy) {
               this.ctx.drawImage(
                 this.images.board,
                 ox - this.marginLeft - clearW / 2,
@@ -945,14 +945,14 @@
           } else {
             // no board texture
             this.ctx.fillStyle = this.opt.margin.color
-            clearFunc = function(ox, oy) {
+            clearFunc = function (ox, oy) {
               this.ctx.fillRect(ox - clearW / 2, oy - clearH / 2, clearW, clearH)
             }.bind(this)
           }
 
           // Clear board grid under markers when needed
           jboard.each(
-            function(c, type, mark) {
+            function (c, type, mark) {
               // Note: Use of smt has been disabled here for clear results
               var ox = this.getX(c.i - this.opt.view.xOffset)
               var oy = this.getY(c.j - this.opt.view.yOffset)
@@ -967,7 +967,7 @@
 
           // Shadows
           jboard.each(
-            function(c, type) {
+            function (c, type) {
               var ox = this.getX(c.i - this.opt.view.xOffset)
               var oy = this.getY(c.j - this.opt.view.yOffset)
 
@@ -987,7 +987,7 @@
 
           // Stones and marks
           jboard.each(
-            function(c, type, mark) {
+            function (c, type, mark) {
               var ox = this.getX(c.i - this.opt.view.xOffset)
               var oy = this.getY(c.j - this.opt.view.yOffset)
               var markColor
@@ -1040,7 +1040,7 @@
          * @param {String} event The event to listen to, e.g. 'click'.
          * @param {function} callback The callback.
          */
-        Canvas.prototype.addListener = function(event, callback) {
+        Canvas.prototype.addListener = function (event, callback) {
           this.listeners[event].push(callback)
         }
 
@@ -1049,7 +1049,7 @@
       { "./constants": 4, "./coordinate": 5, "./stones": 12, "./util": 13 }
     ],
     4: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var util = require("./util")
@@ -1107,7 +1107,7 @@
       { "./util": 13 }
     ],
     5: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var SGFLetters = "abcdefghijklmnopqrstuvwxyz".split("")
@@ -1124,7 +1124,7 @@
          * @param {int} [j] Row.
          * @constructor
          */
-        var Coordinate = function(i, j) {
+        var Coordinate = function (i, j) {
           if (i !== undefined) {
             if (j !== undefined) {
               this.i = i
@@ -1155,7 +1155,7 @@
          * @param {Coordinate} Coordinate.
          * @returns {boolean} true if equal, false if not.
          */
-        Coordinate.prototype.equals = function(c) {
+        Coordinate.prototype.equals = function (c) {
           return c.i == this.i && c.j == this.j
         }
 
@@ -1164,7 +1164,7 @@
          *
          * @returns {string} String representation.
          */
-        Coordinate.prototype.toString = function() {
+        Coordinate.prototype.toString = function () {
           return SGFLetters[this.i] + SGFLetters[this.j]
         }
 
@@ -1173,7 +1173,7 @@
          *
          * @returns {Coordinate} A copy of this coordinate.
          */
-        Coordinate.prototype.copy = function() {
+        Coordinate.prototype.copy = function () {
           return new Coordinate(this.i, this.j)
         }
 
@@ -1182,7 +1182,7 @@
       {}
     ],
     6: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var JGO = require("./constants") // base for JGO object
@@ -1217,7 +1217,7 @@
       }
     ],
     7: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var util = require("./util")
@@ -1231,7 +1231,7 @@
          * @param {Object} info Node information - ko coordinate, comment, etc.
          * @constructor
          */
-        var Node = function(jboard, parent, info) {
+        var Node = function (jboard, parent, info) {
           this.jboard = jboard
           this.parent = parent
           this.info = info ? util.extend({}, info) : {}
@@ -1250,7 +1250,7 @@
          * Helper method to clear parent node's markers. Created to achieve SGF like
          * stateless marker behavaior.
          */
-        Node.prototype.clearParentMarks = function() {
+        Node.prototype.clearParentMarks = function () {
           if (!this.parent) return
 
           for (var i = this.parent.changes.length - 1; i >= 0; i--) {
@@ -1266,7 +1266,7 @@
          * @param {Object} c Coordinate or array of them.
          * @param {int} val Type.
          */
-        Node.prototype.setType = function(c, val) {
+        Node.prototype.setType = function (c, val) {
           if (c instanceof Array) {
             for (var i = 0, len = c.length; i < len; ++i) this.setType(c[i], val) // avoid repeating ourselves
             return
@@ -1283,7 +1283,7 @@
          * @param {Object} c Coordinate or array of them.
          * @param {int} val Mark.
          */
-        Node.prototype.setMark = function(c, val) {
+        Node.prototype.setMark = function (c, val) {
           if (c instanceof Array) {
             for (var i = 0, len = c.length; i < len; ++i) this.setMark(c[i], val) // avoid repeating ourselves
             return
@@ -1297,7 +1297,7 @@
         /**
          * Apply changes of this node to board.
          */
-        Node.prototype.apply = function() {
+        Node.prototype.apply = function () {
           for (var i = 0; i < this.changes.length; i++) {
             var item = this.changes[i]
 
@@ -1309,7 +1309,7 @@
         /**
          * Revert changes of this node to board.
          */
-        Node.prototype.revert = function() {
+        Node.prototype.revert = function () {
           for (var i = this.changes.length - 1; i >= 0; i--) {
             var item = this.changes[i]
 
@@ -1323,7 +1323,7 @@
       { "./constants": 4, "./util": 13 }
     ],
     8: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         /**
@@ -1333,12 +1333,12 @@
          * @param {Board} jboard The board to listen to.
          * @constructor
          */
-        var Notifier = function(jboard) {
+        var Notifier = function (jboard) {
           this.updateScheduled = false // set on first change
           this.canvases = [] // canvases to notify on changes
           this.board = jboard
 
-          this.changeFunc = function(ev) {
+          this.changeFunc = function (ev) {
             var coord = ev.coordinate
 
             if (this.updateScheduled) {
@@ -1355,7 +1355,7 @@
             this.updateScheduled = true
 
             setTimeout(
-              function() {
+              function () {
                 // schedule update in the end
                 for (var c = 0; c < this.canvases.length; c++)
                   this.canvases[c].draw(this.board, this.min.i, this.min.j, this.max.i, this.max.j)
@@ -1375,7 +1375,7 @@
          *
          * @param {Board} board New board to listen to.
          */
-        Notifier.prototype.changeBoard = function(board) {
+        Notifier.prototype.changeBoard = function (board) {
           this.board.removeListener(this.changeFunc)
           this.board = board
           this.board.addListener(this.changeFunc)
@@ -1390,7 +1390,7 @@
          *
          * @param {Canvas} jcanvas The canvas to add.
          */
-        Notifier.prototype.addCanvas = function(jcanvas) {
+        Notifier.prototype.addCanvas = function (jcanvas) {
           this.canvases.push(jcanvas)
         }
 
@@ -1399,7 +1399,7 @@
       {}
     ],
     9: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var Board = require("./board")
@@ -1413,7 +1413,7 @@
          * @param {int} height Board height.
          * @constructor
          */
-        var Record = function(width, height) {
+        var Record = function (width, height) {
           this.jboard = new Board(width, height ? height : width)
           this.root = this.current = null
           this.info = {} // game information
@@ -1424,7 +1424,7 @@
          *
          * @returns {Board} Board object.
          */
-        Record.prototype.getBoard = function() {
+        Record.prototype.getBoard = function () {
           return this.jboard
         }
 
@@ -1433,7 +1433,7 @@
          *
          * @returns {Node} Current node.
          */
-        Record.prototype.getCurrentNode = function() {
+        Record.prototype.getCurrentNode = function () {
           return this.current
         }
 
@@ -1442,7 +1442,7 @@
          *
          * @returns {Node} Root node.
          */
-        Record.prototype.getRootNode = function() {
+        Record.prototype.getRootNode = function () {
           return this.root
         }
 
@@ -1453,7 +1453,7 @@
          * @param {Object} info Node information - ko coordinate, comment, etc.
          * @returns {Node} New, current node.
          */
-        Record.prototype.createNode = function(clearParentMarks, options) {
+        Record.prototype.createNode = function (clearParentMarks, options) {
           var node = new Node(this.jboard, this.current, options)
 
           if (clearParentMarks) node.clearParentMarks()
@@ -1469,7 +1469,7 @@
          * @param {int} [variation] parameter to specify which variation to select, if there are several branches.
          * @returns {Node} New current node or null if at the end of game tree.
          */
-        Record.prototype.next = function(variation) {
+        Record.prototype.next = function (variation) {
           if (this.current === null) return null
 
           if (!variation) variation = 0
@@ -1487,7 +1487,7 @@
          *
          * @returns {Node} New current node or null if at the beginning of game tree.
          */
-        Record.prototype.previous = function() {
+        Record.prototype.previous = function () {
           if (this.current === null || this.current.parent === null) return null // empty or no parent
 
           this.current.revert(this.jboard)
@@ -1501,7 +1501,7 @@
          *
          * @returns {int} Current variations.
          */
-        Record.prototype.getVariation = function() {
+        Record.prototype.getVariation = function () {
           if (this.current === null || this.current.parent === null) return 0
           return this.current.parent.children.indexOf(this.current)
         }
@@ -1511,7 +1511,7 @@
          *
          * @param {int} [variation] parameter to specify which variation to select, if there are several branches.
          */
-        Record.prototype.setVariation = function(variation) {
+        Record.prototype.setVariation = function (variation) {
           if (this.previous() === null) return null
           return this.next(variation)
         }
@@ -1521,7 +1521,7 @@
          *
          * @returns {int} Number of variations.
          */
-        Record.prototype.getVariations = function() {
+        Record.prototype.getVariations = function () {
           if (this.current === null || this.current.parent === null) return 1
 
           return this.current.parent.children.length // "nice"
@@ -1532,7 +1532,7 @@
          *
          * @returns {Node} New current node.
          */
-        Record.prototype.first = function() {
+        Record.prototype.first = function () {
           this.current = this.root
           this.jboard.clear()
 
@@ -1547,7 +1547,7 @@
          *
          * @returns Snapshot to be used with restoreSnapshot().
          */
-        Record.prototype.createSnapshot = function() {
+        Record.prototype.createSnapshot = function () {
           return { jboard: this.jboard.getRaw(), current: this.current }
         }
 
@@ -1558,7 +1558,7 @@
          *
          * @param {Object} raw Snapshot created with createSnapshot().
          */
-        Record.prototype.restoreSnapshot = function(raw) {
+        Record.prototype.restoreSnapshot = function (raw) {
           this.jboard.setRaw(raw.jboard)
           this.current = raw.current
         }
@@ -1569,7 +1569,7 @@
          * @param {Node} node The node to start with. Defaults to root if unset.
          * @returns int Length of longest subsequence.
          */
-        Record.prototype.normalize = function(node) {
+        Record.prototype.normalize = function (node) {
           var i,
             len,
             maxLen = 0,
@@ -1600,7 +1600,7 @@
       { "./board": 2, "./node": 7 }
     ],
     10: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var Notifier = require("./notifier")
@@ -1614,7 +1614,7 @@
          * @param {Object} boardOptions Base board options like BOARD.large.
          * @constructor
          */
-        var Setup = function(board, boardOptions) {
+        var Setup = function (board, boardOptions) {
           var defaults = {
             margin: { color: "white" },
             edge: { top: true, bottom: true, left: true, right: true },
@@ -1653,7 +1653,7 @@
          * @param {int} width The width.
          * @param {int} height The height.
          */
-        Setup.prototype.view = function(xOff, yOff, width, height) {
+        Setup.prototype.view = function (xOff, yOff, width, height) {
           this.options.view.xOffset = xOff
           this.options.view.yOffset = yOff
           this.options.view.width = width
@@ -1671,7 +1671,7 @@
          *
          * @param {Object} options The new options.
          */
-        Setup.prototype.setOptions = function(options) {
+        Setup.prototype.setOptions = function (options) {
           util.extend(this.options, options)
         }
 
@@ -1681,7 +1681,7 @@
          *
          * @returns {Notifier} Canvas notifier.
          */
-        Setup.prototype.getNotifier = function() {
+        Setup.prototype.getNotifier = function () {
           return this.notifier
         }
 
@@ -1693,10 +1693,10 @@
          * @param {Object} elemId The element id or HTML Node where to create the canvas in.
          * @param {function} readyFn Function to call with canvas once it is ready.
          */
-        Setup.prototype.create = function(elemId, readyFn) {
+        Setup.prototype.create = function (elemId, readyFn) {
           var options = util.extend({}, this.options) // create a copy
 
-          var createCallback = function(images) {
+          var createCallback = function (images) {
             var jcanvas = new Canvas(elemId, options, images)
 
             jcanvas.draw(this.board, 0, 0, this.board.width - 1, this.board.height - 1)
@@ -1719,7 +1719,7 @@
       { "./canvas": 3, "./notifier": 8, "./util": 13 }
     ],
     11: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         /**
@@ -2182,7 +2182,7 @@
          * @param {bool} moveMarks Create move and ko marks in the record.
          * @returns {Object} Record object, array of them, or string on error.
          */
-        exports.load = function(sgf, moveMarks) {
+        exports.load = function (sgf, moveMarks) {
           var gameTree = parseSGF(sgf)
 
           if (gameTree === false) return ERROR
@@ -2210,7 +2210,7 @@
       { "./constants": 4, "./coordinate": 5, "./record": 9 }
     ],
     12: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         var C = require("./constants")
@@ -2223,7 +2223,7 @@
          * @param {Object} options Options array.
          * @constructor
          */
-        var Stones = function(options, images) {
+        var Stones = function (options, images) {
           this.stoneR = options.stone.radius
           this.gridX = options.grid.x
           this.gridY = options.grid.x
@@ -2234,7 +2234,7 @@
           this.images = images
         }
 
-        Stones.prototype.drawStone = function(ctx, type, ox, oy, scale) {
+        Stones.prototype.drawStone = function (ctx, type, ox, oy, scale) {
           if (!scale) scale = 1
           var stone = type == C.BLACK || type == C.DIM_BLACK ? this.images.black : this.images.white
 
@@ -2265,7 +2265,7 @@
           }
         }
 
-        Stones.prototype.drawShadow = function(ctx, ox, oy, scale) {
+        Stones.prototype.drawShadow = function (ctx, ox, oy, scale) {
           var shadow = this.images.shadow
           if (!shadow) return
           if (!scale) scale = 1
@@ -2283,7 +2283,7 @@
           )
         }
 
-        Stones.prototype.drawMark = function(ctx, mark, ox, oy) {
+        Stones.prototype.drawMark = function (ctx, mark, ox, oy) {
           switch (mark) {
             case C.MARK.SQUARE:
               ctx.beginPath()
@@ -2351,7 +2351,7 @@
       { "./constants": 4 }
     ],
     13: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
 
         /**
@@ -2367,14 +2367,14 @@
          * @param {Object} sources A dictionary of sources to load.
          * @param {function} callback A callback function to call with image dict.
          */
-        exports.loadImages = function(sources, callback) {
+        exports.loadImages = function (sources, callback) {
           var images = {},
             imagesLeft = 0
 
           for (var src in sources) // count non-false properties as images
             if (sources.hasOwnProperty(src) && sources[src]) imagesLeft++
 
-          var countdown = function() {
+          var countdown = function () {
             if (--imagesLeft <= 0) {
               callback(images)
             }
@@ -2398,7 +2398,7 @@
          * @param {itn} num Number of handicap stones.
          * @returns {Array} Array of Coordinate objects.
          */
-        exports.getHandicapCoordinates = function(size, num) {
+        exports.getHandicapCoordinates = function (size, num) {
           // Telephone dial style numbering
           var handicapPlaces = [
             [],
@@ -2436,7 +2436,7 @@
          * @param {Object} src Source object which properties will be copied.
          * @returns {Object} Extended destination object.
          */
-        exports.extend = function(dest, src) {
+        exports.extend = function (dest, src) {
           for (var key in src) {
             if (src.hasOwnProperty(key)) {
               if (typeof src[key] === "object") {
@@ -2452,7 +2452,7 @@
       { "./coordinate": 5 }
     ],
     14: [
-      function(require, module, exports) {
+      function (require, module, exports) {
         "use strict"
         var JGO = require("./JGO")
         window.JGO = JGO // expose as global object
