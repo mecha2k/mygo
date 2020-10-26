@@ -47,7 +47,14 @@ model.summary()
 # <6> ... and follow up with two more dense layers, as we did in the MLP example.
 
 model.compile(loss="mean_squared_error", optimizer="sgd", metrics=["accuracy"])
-model.fit(X_train, Y_train, batch_size=64, epochs=15, verbose=1, validation_data=(X_test, Y_test))
+model.fit(
+    X_train,
+    Y_train,
+    batch_size=64,
+    epochs=15,
+    verbose=1,
+    validation_data=(X_test, Y_test),
+)
 score = model.evaluate(X_test, Y_test, verbose=0)
 print("Test loss:", score[0])
 print("Test accuracy:", score[1])
