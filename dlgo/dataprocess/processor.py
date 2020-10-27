@@ -19,7 +19,7 @@ from dlgo.dataprocess.sampling import Sampler
 
 
 class GoDataProcessor:
-    def __init__(self, encoder="oneplane", data_directory="../../examples/data"):
+    def __init__(self, encoder="oneplane", data_directory="data"):
         self.encoder = get_encoder_by_name(encoder, 19)
         self.data_dir = data_directory
 
@@ -41,7 +41,9 @@ class GoDataProcessor:
             base_name = zip_name.replace(".tar.gz", "")
             data_file_name = base_name + data_type
             if not os.path.isfile(self.data_dir + "/" + data_file_name):
-                self.process_zip(zip_name, data_file_name, indices_by_zip_name[zip_name])
+                self.process_zip(
+                    zip_name, data_file_name, indices_by_zip_name[zip_name]
+                )
 
         features_and_labels = self.consolidate_games(data_type, data)
         return features_and_labels
@@ -123,14 +125,20 @@ class GoDataProcessor:
 
         chunk = 0  # Due to files with large content, split up after chunksize
         chunksize = 1024
-        while features.shape[0] >= chunksize:
+        if features.shape[0] >= chunksize:
+            while features.shape[0] >= chunksize:
+                feature_file = feature_file_base % chunk
+                label_file = label_file_base % chunk
+                chunk += 1
+                current_features, features = features[:chunksize], features[chunksize:]
+                current_labels, labels = labels[:chunksize], labels[chunksize:]
+                np.save(feature_file, current_features)
+                np.save(label_file, current_labels)
+        else:
             feature_file = feature_file_base % chunk
             label_file = label_file_base % chunk
-            chunk += 1
-            current_features, features = features[:chunksize], features[chunksize:]
-            current_labels, labels = labels[:chunksize], labels[chunksize:]
-            np.save(feature_file, current_features)
-            np.save(label_file, current_labels)
+            np.save(feature_file, features)
+            np.save(label_file, labels)
 
     # <1> We process features and labels in chunks of size 1024.
     # <2> The current chunk is cut off from features and labels...

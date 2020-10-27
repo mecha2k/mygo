@@ -1,5 +1,6 @@
 from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.oneplane import OnePlaneEncoder
+from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.neuralnet import small
 
 import tensorflow as tf
@@ -14,10 +15,11 @@ def train_generator():
     num_classes = go_board_rows * go_board_cols
     num_games = 10
 
-    encoder = OnePlaneEncoder((go_board_rows, go_board_cols))
-    processor = GoDataProcessor(encoder=encoder.name())
-    x_train, y_train = processor.load_go_data("train", num_games, use_generator=False)
-    x_test, y_test = processor.load_go_data("test", num_games, use_generator=False)
+    # encoder = OnePlaneEncoder((go_board_rows, go_board_cols))
+    encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
+    processor = GoDataProcessor(encoder=encoder.name(), data_directory="../data")
+    x_train, y_train = processor.load_go_data("train", num_games)
+    x_test, y_test = processor.load_go_data("test", num_games)
     x_train = tf.transpose(x_train, perm=[0, 2, 3, 1])
     x_test = tf.transpose(x_test, perm=[0, 2, 3, 1])
 
@@ -32,8 +34,20 @@ def train_generator():
     )
     model.summary()
 
-    epochs = 1
+    epochs = 10
     batch_size = 128
+    model.fit(
+        x_train,
+        y_train,
+        batch_size=batch_size,
+        epochs=epochs,
+        verbose=1,
+        validation_data=(x_test, y_test),
+    )
+    score = model.evaluate(x_test, y_test, verbose=0)
+    print("Test loss:", score[0])
+    print("Test accuracy:", score[1])
+
     # gen = generator.generate(batch_size, num_classes)
     # print(generator.get_num_samples())
     #

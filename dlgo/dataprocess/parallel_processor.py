@@ -106,14 +106,20 @@ class GoDataProcessor:
 
         chunk = 0  # Due to files with large content, split up after chunksize
         chunksize = 1024
-        while features.shape[0] >= chunksize:
+        if features.shape[0] >= chunksize:
+            while features.shape[0] >= chunksize:
+                feature_file = feature_file_base % chunk
+                label_file = label_file_base % chunk
+                chunk += 1
+                current_features, features = features[:chunksize], features[chunksize:]
+                current_labels, labels = labels[:chunksize], labels[chunksize:]
+                np.save(feature_file, current_features)
+                np.save(label_file, current_labels)
+        else:
             feature_file = feature_file_base % chunk
             label_file = label_file_base % chunk
-            chunk += 1
-            current_features, features = features[:chunksize], features[chunksize:]
-            current_labels, labels = labels[:chunksize], labels[chunksize:]
-            np.save(feature_file, current_features)
-            np.save(label_file, current_labels)
+            np.save(feature_file, features)
+            np.save(label_file, labels)
 
     def consolidate_games(self, name, samples):
         files_needed = set(file_name for file_name, index in samples)

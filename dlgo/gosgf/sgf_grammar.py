@@ -72,7 +72,7 @@ def is_valid_property_value(s):
     s -- 8-bit string
 
     This accepts the same values as the tokeniser: any string that doesn't
-    contain an unescaped ] or end with an unescaped \ .
+    contain an unescaped ] or end with an unescaped .
 
     """
     return bool(_propvalue_re.search(s))
@@ -320,7 +320,8 @@ def serialise_game_tree(game_tree, wrap=79):
             # Force FF to the front, largely to work around a Quarry bug which
             # makes it ignore the first few bytes of the file.
             for prop_ident, prop_values in sorted(
-                list(properties.items()), key=lambda pair: (-(pair[0] == b"FF"), pair[0])
+                list(properties.items()),
+                key=lambda pair: (-(pair[0] == b"FF"), pair[0]),
             ):
                 # Make a single string for each property, to get prettier
                 # block_format output.
@@ -421,7 +422,9 @@ def main_sequence_iter(game_tree):
         game_tree = game_tree.children[0]
 
 
-_split_compose_re = re.compile(r"( (?: [^\\:] | \\. )* ) :".encode("ascii"), re.VERBOSE | re.DOTALL)
+_split_compose_re = re.compile(
+    r"( (?: [^\\:] | \\. )* ) :".encode("ascii"), re.VERBOSE | re.DOTALL
+)
 
 
 def parse_compose(s):
