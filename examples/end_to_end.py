@@ -1,9 +1,11 @@
 import h5py
 import tensorflow as tf
+import os
 
 from keras.models import Sequential
 from keras.layers import Dense
 from multiprocessing import freeze_support
+from dotenv import load_dotenv
 
 from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
 from dlgo.dataprocess.parallel_processor import GoDataProcessor
@@ -34,8 +36,11 @@ def end_to_end():
 
     model.fit(X, y, batch_size=128, epochs=1, verbose=1)
 
+    load_dotenv(verbose=True)
+    AGENT_DIR = os.getenv("AGENT_DIR")
+
     deep_learning_bot = DeepLearningAgent(model, encoder)
-    deep_learning_bot.serialize(h5py.File("../agents/deep_bot.h5", "w"))
+    deep_learning_bot.serialize(h5py.File(AGENT_DIR + "/deep_bot.h5", "w"))
 
     # model_file = h5py.File("../agents/deep_bot.h5", "r")
     # bot_from_file = load_prediction_agent(model_file)

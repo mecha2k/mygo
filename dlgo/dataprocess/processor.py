@@ -1,5 +1,6 @@
 from __future__ import absolute_import
 
+import os
 import os.path
 import tarfile
 import gzip
@@ -8,6 +9,7 @@ import shutil
 
 import numpy as np
 from keras.utils import to_categorical
+from dotenv import load_dotenv
 
 from dlgo.gosgf import Sgf_game
 from dlgo.goboard_fast import Board, GameState, Move
@@ -19,9 +21,12 @@ from dlgo.dataprocess.sampling import Sampler
 
 
 class GoDataProcessor:
-    def __init__(self, encoder="oneplane", data_directory="data"):
+    def __init__(self, encoder="oneplane"):
+        load_dotenv(verbose=True)
+        DATA_DIR = os.getenv("DATA_DIR")
+
         self.encoder = get_encoder_by_name(encoder, 19)
-        self.data_dir = data_directory
+        self.data_dir = DATA_DIR
 
     def load_go_data(self, data_type="train", num_samples=1000):
         index = KGSIndex(data_directory=self.data_dir)

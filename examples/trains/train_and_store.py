@@ -2,7 +2,9 @@ from __future__ import print_function
 from keras.models import Sequential
 from keras.layers.core import Dense
 from multiprocessing import freeze_support
+from dotenv import load_dotenv
 import tensorflow as tf
+import os
 
 from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
@@ -14,7 +16,7 @@ def train_and_store():
     nb_classes = go_board_rows * go_board_cols
 
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
-    processor = GoDataProcessor(encoder=encoder.name(), data_directory="../data")
+    processor = GoDataProcessor(encoder=encoder.name())
 
     input_channels = encoder.num_planes
     input_shape = (go_board_rows, go_board_cols, input_channels)
@@ -34,9 +36,12 @@ def train_and_store():
 
     model.fit(X, y, batch_size=128, epochs=1, verbose=1)
 
-    weight_file = "../../agents/weights.hd5"
+    load_dotenv(verbose=True)
+    AGENT_DIR = os.getenv("AGENT_DIR")
+
+    weight_file = AGENT_DIR + "/weights.hd5"
     model.save_weights(weight_file, overwrite=True)
-    model_file = "../../agents/model.yml"
+    model_file = AGENT_DIR + "/model.yml"
     with open(model_file, "w") as yml:
         model_yaml = model.to_yaml()
         yml.write(model_yaml)

@@ -10,6 +10,7 @@ import numpy as np
 import multiprocessing
 import sys
 from keras.utils import to_categorical
+from dotenv import load_dotenv
 
 from dlgo.gosgf import Sgf_game
 from dlgo.goboard_fast import Board, GameState, Move
@@ -29,10 +30,13 @@ def worker(jobinfo):
 
 
 class GoDataProcessor:
-    def __init__(self, encoder="simple", data_directory="../../examples/data"):
+    def __init__(self, encoder="simple"):
+        load_dotenv(verbose=True)
+        DATA_DIR = os.getenv("DATA_DIR")
+
         self.encoder_string = encoder
         self.encoder = get_encoder_by_name(encoder, 19)
-        self.data_dir = data_directory
+        self.data_dir = DATA_DIR
 
     def load_go_data(self, data_type="train", num_samples=1000, use_generator=False):
         index = KGSIndex(data_directory=self.data_dir)

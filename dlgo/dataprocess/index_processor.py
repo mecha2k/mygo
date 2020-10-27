@@ -9,6 +9,8 @@ import sys
 import multiprocessing
 import six
 
+from dotenv import load_dotenv
+
 if sys.version_info[0] == 3:
     from urllib.request import urlopen, urlretrieve
 else:
@@ -28,8 +30,8 @@ class KGSIndex:
     def __init__(
         self,
         kgs_url="http://u-go.net/gamerecords/",
-        index_page="kgs_index.html",
-        data_directory="../../examples/data",
+        index_page=None,
+        data_directory=None,
     ):
         """Create an index of zip files containing SGF dataprocess of actual Go Games on KGS.
 
@@ -39,9 +41,13 @@ class KGSIndex:
         index_page: Name of local html file of kgs_url
         data_directory: name of directory relative to current path to store SGF dataprocess
         """
+        load_dotenv(verbose=True)
+        DATA_DIR = os.getenv("DATA_DIR")
+        KGS_INDEX = os.getenv("KGS_INDEX")
+
         self.kgs_url = kgs_url
-        self.index_page = index_page
-        self.data_directory = data_directory
+        self.index_page = KGS_INDEX
+        self.data_directory = DATA_DIR
         self.file_info = []
         self.urls = []
         self.load_index()  # Load index on creation
@@ -93,7 +99,9 @@ class KGSIndex:
         """Create the actual index representation from the previously downloaded or cached html."""
         index_contents = self.create_index_page()
         split_page = [
-            item for item in index_contents.split('<a href="') if item.startswith("https://")
+            item
+            for item in index_contents.split('<a href="')
+            if item.startswith("https://")
         ]
         for item in split_page:
             download_url = item.split('">Download')[0]
@@ -104,7 +112,9 @@ class KGSIndex:
             split_file_name = filename.split("-")
             num_games = int(split_file_name[len(split_file_name) - 2])
             print(filename + " " + str(num_games))
-            self.file_info.append({"url": url, "filename": filename, "num_games": num_games})
+            self.file_info.append(
+                {"url": url, "filename": filename, "num_games": num_games}
+            )
 
 
 if __name__ == "__main__":

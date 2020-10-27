@@ -17,7 +17,7 @@ def train_generator():
 
     # encoder = OnePlaneEncoder((go_board_rows, go_board_cols))
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
-    processor = GoDataProcessor(encoder=encoder.name(), data_directory="../data")
+    processor = GoDataProcessor(encoder=encoder.name())
     x_train, y_train = processor.load_go_data("train", num_games)
     x_test, y_test = processor.load_go_data("test", num_games)
     x_train = tf.transpose(x_train, perm=[0, 2, 3, 1])
@@ -34,7 +34,7 @@ def train_generator():
     )
     model.summary()
 
-    epochs = 10
+    epochs = 1
     batch_size = 128
     model.fit(
         x_train,
@@ -47,6 +47,10 @@ def train_generator():
     score = model.evaluate(x_test, y_test, verbose=0)
     print("Test loss:", score[0])
     print("Test accuracy:", score[1])
+
+    load_dotenv(verbose=True)
+    AGENT_DIR = os.getenv("AGENT_DIR")
+    check_model = AGENT_DIR + "/checkpoints/small_model_epoch_{epoch}.h5"
 
     # gen = generator.generate(batch_size, num_classes)
     # print(generator.get_num_samples())

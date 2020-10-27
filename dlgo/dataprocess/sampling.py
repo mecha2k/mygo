@@ -7,17 +7,18 @@ import os
 import random
 from dlgo.dataprocess.index_processor import KGSIndex
 from six.moves import range
+from dotenv import load_dotenv
 
 
 class Sampler:
     """Sample training and test dataprocess from zipped sgf files such that test dataprocess is kept stable."""
 
-    def __init__(self, data_dir="data", num_test_games=100, cap_year=2015, seed=1337):
+    def __init__(self, data_dir=None, num_test_games=100, cap_year=2015, seed=1337):
         self.data_dir = data_dir
         self.num_test_games = num_test_games
         self.test_games = []
         self.train_games = []
-        self.test_folder = "test_samples.py"
+        self.test_folder = data_dir + "/test_samples.py"
         self.cap_year = cap_year
 
         random.seed(seed)
