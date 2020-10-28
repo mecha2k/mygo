@@ -15,7 +15,7 @@ from dotenv import load_dotenv
 def train_generator():
     go_board_rows, go_board_cols = 19, 19
     num_classes = go_board_rows * go_board_cols
-    num_games = 2
+    num_games = 100
 
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
     processor = GoDataProcessor(encoder=encoder.name())
@@ -34,7 +34,7 @@ def train_generator():
     )
     model.summary()
 
-    epochs = 1
+    epochs = 20
     batch_size = 128
 
     train_num = train_gen.get_num_samples(batch_size, num_classes)
@@ -42,6 +42,18 @@ def train_generator():
 
     load_dotenv(verbose=True)
     AGENT_DIR = os.getenv("AGENT_DIR")
+    filepath = AGENT_DIR + "/checkpoints/model_epoch_{epoch:02d}-{loss:.2f}.h5"
+    callbacks = [
+        ModelCheckpoint(
+            filepath=filepath,
+            monitor="accuracy",
+            save_best_only=True,
+            save_weights_only=True,
+            mode="auto",
+            save_freq="epoch",
+            verbose=1,
+        )
+    ]
 
     model.fit(
         train_gen.generate(batch_size, num_classes),
@@ -49,9 +61,7 @@ def train_generator():
         steps_per_epoch=train_gen.get_num_samples() / batch_size,
         validation_data=test_gen.generate(batch_size, num_classes),
         validation_steps=test_gen.get_num_samples() / batch_size,
-        callbacks=[
-            ModelCheckpoint(AGENT_DIR + "checkpoints/small_model_epoch_{epoch}.h5")
-        ],
+        callbacks=callbacks,
     )
 
     model.evaluate(
