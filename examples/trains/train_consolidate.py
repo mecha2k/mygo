@@ -1,10 +1,10 @@
 from dlgo.dataprocess.parallel_processor import GoDataProcessor
+from dlgo.dataprocess.generator import DataGenerator
 from dlgo.encoders.oneplane import OnePlaneEncoder
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.neuralnet import small
 
 import os
-import tensorflow as tf
 from keras.models import Sequential
 from keras.layers.core import Dense
 from keras.callbacks import ModelCheckpoint
@@ -12,16 +12,16 @@ from multiprocessing import freeze_support
 from dotenv import load_dotenv
 
 
-def train_generator():
+def train_consolidate():
     go_board_rows, go_board_cols = 19, 19
     num_classes = go_board_rows * go_board_cols
     num_games = 2
 
+    # encoder = OnePlaneEncoder((go_board_rows, go_board_cols))
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
     processor = GoDataProcessor(encoder=encoder.name())
-
-    train_gen = processor.load_go_data("train", num_games, use_generator=True)
-    test_gen = processor.load_go_data("test", num_games, use_generator=True)
+    x_train, y_train = processor.load_go_data("train", num_games)
+    x_test, y_test = processor.load_go_data("test", num_games)
 
     input_shape = (go_board_rows, go_board_cols, encoder.num_planes)
     network_layers = small.layers(input_shape)
@@ -36,30 +36,19 @@ def train_generator():
 
     epochs = 1
     batch_size = 128
-
-    train_num = train_gen.get_num_samples(batch_size, num_classes)
-    print(train_num)
-
-    load_dotenv(verbose=True)
-    AGENT_DIR = os.getenv("AGENT_DIR")
-
     model.fit(
-        train_gen.generate(batch_size, num_classes),
+        x_train,
+        y_train,
+        batch_size=batch_size,
         epochs=epochs,
-        steps_per_epoch=train_gen.get_num_samples() / batch_size,
-        validation_data=test_gen.generate(batch_size, num_classes),
-        validation_steps=test_gen.get_num_samples() / batch_size,
-        callbacks=[
-            ModelCheckpoint(AGENT_DIR + "checkpoints/small_model_epoch_{epoch}.h5")
-        ],
+        verbose=1,
+        validation_data=(x_test, y_test),
     )
-
-    model.evaluate(
-        test_gen.generate(batch_size, num_classes),
-        steps=test_gen.get_num_samples() / batch_size,
-    )
+    score = model.evaluate(x_test, y_test, verbose=0)
+    print("Test loss:", score[0])
+    print("Test accuracy:", score[1])
 
 
 if __name__ == "__main__":
     freeze_support()
-    train_generator()
+    train_consolidate()

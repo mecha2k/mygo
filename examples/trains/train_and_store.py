@@ -20,9 +20,7 @@ def train_and_store():
 
     input_channels = encoder.num_planes
     input_shape = (go_board_rows, go_board_cols, input_channels)
-
-    X, y = processor.load_go_data(num_samples=10)
-    X = tf.transpose(X, perm=[0, 2, 3, 1])
+    X, y = processor.load_go_data(num_samples=2)
 
     model = Sequential()
     network_layers = layers(input_shape)

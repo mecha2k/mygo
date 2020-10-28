@@ -1,16 +1,17 @@
 import glob
 import numpy as np
+import tensorflow as tf
 from keras.utils import to_categorical
 
 
 class DataGenerator:
-    def __init__(self, data_directory, samples):
+    def __init__(self, samples, data_directory=None):
         self.data_directory = data_directory
         self.samples = samples
-        self.files = set(file_name for file_name, index in samples)  # <1>
+        self.files = set(file_name for file_name, index in samples)
         self.num_samples = None
 
-    def get_num_samples(self, batch_size=128, num_classes=19 * 19):  # <2>
+    def get_num_samples(self, batch_size=128, num_classes=19 * 19):
         if self.num_samples is not None:
             return self.num_samples
         else:
@@ -18,9 +19,6 @@ class DataGenerator:
             for X, y in self._generate(batch_size=batch_size, num_classes=num_classes):
                 self.num_samples += X.shape[0]
             return self.num_samples
-
-    # <1> Our generator has access to a set of files that we sampled earlier.
-    # <2> Depending on the application, we may need to know how many examples we have.
 
     def _generate(self, batch_size, num_classes):
         for zip_file_name in self.files:
@@ -31,13 +29,12 @@ class DataGenerator:
                 x = np.load(feature_file)
                 y = np.load(label_file)
                 x = x.astype("float32")
+                x = tf.transpose(x, perm=[0, 2, 3, 1])
                 y = to_categorical(y.astype(int), num_classes)
                 while x.shape[0] >= batch_size:
                     x_batch, x = x[:batch_size], x[batch_size:]
                     y_batch, y = y[:batch_size], y[batch_size:]
-                    yield x_batch, y_batch  # <1>
-
-    # <1> We return or "yield" batches of dataprocess as we go.
+                    yield x_batch, y_batch
 
     def generate(self, batch_size=128, num_classes=19 * 19):
         while True:

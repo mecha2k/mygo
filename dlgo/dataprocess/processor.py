@@ -8,6 +8,7 @@ import glob
 import shutil
 
 import numpy as np
+import tensorflow as tf
 from keras.utils import to_categorical
 from dotenv import load_dotenv
 
@@ -170,6 +171,7 @@ class GoDataProcessor:
                 feature_list.append(x)
                 label_list.append(y)
         features = np.concatenate(feature_list, axis=0)
+        features = tf.transpose(features, perm=[0, 2, 3, 1])
         labels = np.concatenate(label_list, axis=0)
         np.save("{}/features_{}.npy".format(self.data_dir, data_type), features)
         np.save("{}/labels_{}.npy".format(self.data_dir, data_type), labels)

@@ -9,6 +9,7 @@ import shutil
 import numpy as np
 import multiprocessing
 import sys
+import tensorflow as tf
 from keras.utils import to_categorical
 from dotenv import load_dotenv
 
@@ -47,7 +48,7 @@ class GoDataProcessor:
 
         self.map_to_workers(data_type, data)
         if use_generator:
-            generator = DataGenerator(self.data_dir, data)
+            generator = DataGenerator(data, self.data_dir)
             return generator
         else:
             features_and_labels = self.consolidate_games(data_type, data)
@@ -147,6 +148,7 @@ class GoDataProcessor:
                 label_list.append(y)
 
         features = np.concatenate(feature_list, axis=0)
+        features = tf.transpose(features, perm=[0, 2, 3, 1])
         labels = np.concatenate(label_list, axis=0)
 
         feature_file = self.data_dir + "/" + name
