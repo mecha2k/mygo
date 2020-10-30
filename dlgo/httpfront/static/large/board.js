@@ -1,6 +1,6 @@
 // Import or create JGO namespace
 
-let JGO = JGO || {}
+var JGO = JGO || {}
 
 JGO.BOARD = JGO.BOARD || {}
 
