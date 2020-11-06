@@ -1,5 +1,6 @@
 body {
   font-family: Helvetica Neue, Helvetica, Arial, sans-serif;
+  font-size: large;
   text-align: center;
 }
 .loader,
@@ -60,6 +61,6 @@ body {
   }
 }
 
-/*#board {*/
-/*  transform: scale(0.5) translate(0, -500px);*/
-/*}*/
+#board {
+  transform: scale(0.8) translate(0, 0);
+}

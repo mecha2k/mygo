@@ -61,8 +61,7 @@ def train_generator():
     )
 
     model.evaluate(
-        test_gen.generate(batch_size, num_classes),
-        steps=test_gen.get_num_samples() / batch_size,
+        test_gen.generate(batch_size, num_classes), steps=test_gen.get_num_samples() / batch_size,
     )
 
 

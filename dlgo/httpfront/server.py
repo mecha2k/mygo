@@ -1,10 +1,10 @@
 import os
+import datetime
 
 from flask import Flask
 from flask import jsonify
-from flask import request
+from flask import request, render_template, make_response
 
-from dlgo import agent
 from dlgo import goboard_fast as goboard
 from dlgo.utils import coords_from_point
 from dlgo.utils import point_from_coords
@@ -13,27 +13,36 @@ __all__ = ["get_web_app"]
 
 
 def get_web_app(bot_map):
-    """Create a flask application for serving bot moves.
-
-    The bot_map maps from URL path fragments to Agent instances.
-
-    The /static path will return some static content (including the
-    jgoboard JS).
-
-    Clients can get the post move by POSTing json to
-    /select-move/<bot name>
-
-    Example:
-
-    # >>> myagent = agent.RandomBot()
-    # >>> web_app = get_web_app({'random': myagent})
-    # >>> web_app.run()
-
-    Returns: Flask application instance
-    """
     here = os.path.dirname(__file__)
     static_path = os.path.join(here, "static")
-    app = Flask(__name__, static_folder=static_path, static_url_path="/static")
+    template_path = os.path.join(here, "templates")
+    app = Flask(
+        __name__, static_url_path="", static_folder=static_path, template_folder=template_path,
+    )
+    app.config["TEMPLATES_AUTO_RELOAD"] = True
+    app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
+    app.config["EXPLAIN_TEMPLATE_LOADING"] = True
+    print(app.config)
+    print(here)
+    print(static_path)
+    print(template_path)
+
+    @app.route("/")
+    def home():
+        mycookie = request.cookies.get("cookie")
+        if mycookie is None:
+            mycookie = "mecha2k"
+        mycity = request.args.get("city")
+        if mycity is None:
+            mycity = "Seoul"
+
+        response = make_response(render_template("play_random_99.html", city=mycity))
+
+        expires = datetime.datetime.now() + datetime.timedelta(days=365)
+        response.set_cookie("mycookie", mycookie, expires=expires)
+        response.set_cookie("city", mycity, expires=expires)
+
+        return response
 
     @app.route("/select-move/<bot_name>", methods=["POST"])
     def select_move(bot_name):
@@ -57,6 +66,10 @@ def get_web_app(bot_map):
             bot_move_str = "resign"
         else:
             bot_move_str = coords_from_point(bot_move.point)
-        return jsonify({"bot_move": bot_move_str, "diagnostics": bot_agent.diagnostics()})
+
+        print(bot_move_str)
+        # print(bot_agent.diagnostics())
+        # return jsonify({"bot_move": bot_move_str, "diagnostics": bot_agent.diagnostics()})
+        return jsonify({"bot_move": bot_move_str})
 
     return app
