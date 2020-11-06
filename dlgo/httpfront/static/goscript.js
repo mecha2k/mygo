@@ -1,16 +1,16 @@
-const BOARD_SIZE = 9
-const jrecord = new JGO.Record(BOARD_SIZE)
-const jboard = jrecord.jboard
-const jsetup = new JGO.Setup(jboard, JGO.BOARD.largeWalnut)
-const player = JGO.BLACK // next player
-let ko = false
-let lastMove = false // ko coordinate and last move coordinate
-let lastHover = false
-let lastX = -1
-let lastY = -1 // hover helper consts
-let record = []
-const colnames = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N"]
-let waitingForBot = false
+var BOARD_SIZE = 9
+var jrecord = new JGO.Record(BOARD_SIZE)
+var jboard = jrecord.jboard
+var jsetup = new JGO.Setup(jboard, JGO.BOARD.largeWalnut)
+var player = JGO.BLACK // next player
+var ko = false
+var lastMove = false // ko coordinate and last move coordinate
+var lastHover = false
+var lastX = -1
+var lastY = -1 // hover helper vars
+var record = []
+var colnames = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N"]
+var waitingForBot = false
 
 function resetGame(ev) {
   jrecord.jboard.clear()
@@ -22,25 +22,25 @@ function resetGame(ev) {
 }
 
 function coordsToString(point) {
-  const row = BOARD_SIZE - 1 - point.j
-  const col = point.i
+  var row = BOARD_SIZE - 1 - point.j
+  var col = point.i
   return colnames[col] + (row + 1).toString()
 }
 
 function stringToCoords(move_string) {
-  const colStr = move_string.substring(0, 1)
-  const rowStr = move_string.substring(1)
-  const col = colnames.indexOf(colStr)
-  const row = BOARD_SIZE - parseInt(rowStr, 10)
+  var colStr = move_string.substring(0, 1)
+  var rowStr = move_string.substring(1)
+  var col = colnames.indexOf(colStr)
+  var row = BOARD_SIZE - parseInt(rowStr, 10)
   return new JGO.Coordinate(col, row)
 }
 
 function applyMove(player, coord) {
-  const play = jboard.playMove(coord, player, ko)
+  var play = jboard.playMove(coord, player, ko)
 
   if (play.success) {
     record.push(coordsToString(coord))
-    const node = jrecord.createNode(true)
+    var node = jrecord.createNode(true)
     node.info.captures[player] += play.captures.length // tally captures
     node.setType(coord, player) // play stone
     node.setType(play.captures, JGO.CLEAR) // clear opponent's stones
@@ -67,7 +67,7 @@ function waitForBot() {
 }
 
 function stopWaiting(botmove) {
-  let text = "Bot plays " + botmove
+  var text = "Bot plays " + botmove
   if (botmove === "pass") {
     text = "Bot passes"
   } else if (botmove === "resign") {
@@ -85,7 +85,7 @@ jsetup.create("board", function (canvas) {
     if (waitingForBot) {
       return
     }
-    // const opponent = player === JGO.BLACK ? JGO.WHITE : JGO.BLACK
+    // var opponent = player === JGO.BLACK ? JGO.WHITE : JGO.BLACK
 
     if (ev.shiftKey) {
       // on shift do edit
@@ -121,7 +121,7 @@ jsetup.create("board", function (canvas) {
           if (data["bot_move"] === "pass" || data["bot_move"] === "resign") {
             record.push(data["bot_move"])
           } else {
-            const botCoord = stringToCoords(data["bot_move"])
+            var botCoord = stringToCoords(data["bot_move"])
             applyMove(JGO.WHITE, botCoord)
           }
           stopWaiting(data["bot_move"])

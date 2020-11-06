@@ -4,7 +4,6 @@ from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.neuralnet import small
 
 import os
-import tensorflow as tf
 from keras.models import Sequential
 from keras.layers.core import Dense
 from keras.callbacks import ModelCheckpoint
@@ -29,9 +28,7 @@ def train_generator():
     for layer in network_layers:
         model.add(layer)
     model.add(Dense(num_classes, activation="softmax"))
-    model.compile(
-        loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
-    )
+    model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
     model.summary()
 
     epochs = 20
@@ -65,8 +62,7 @@ def train_generator():
     )
 
     model.evaluate(
-        test_gen.generate(batch_size, num_classes),
-        steps=test_gen.get_num_samples() / batch_size,
+        test_gen.generate(batch_size, num_classes), steps=test_gen.get_num_samples() / batch_size,
     )
 
 
