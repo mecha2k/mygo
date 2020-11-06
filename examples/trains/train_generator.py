@@ -1,10 +1,8 @@
 from dlgo.dataprocess.parallel_processor import GoDataProcessor
-from dlgo.encoders.oneplane import OnePlaneEncoder
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.neuralnet import small
 
 import os
-import tensorflow as tf
 from keras.models import Sequential
 from keras.layers.core import Dense
 from keras.callbacks import ModelCheckpoint
@@ -15,7 +13,7 @@ from dotenv import load_dotenv
 def train_generator():
     go_board_rows, go_board_cols = 19, 19
     num_classes = go_board_rows * go_board_cols
-    num_games = 100
+    num_games = 10
 
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
     processor = GoDataProcessor(encoder=encoder.name())
@@ -29,9 +27,7 @@ def train_generator():
     for layer in network_layers:
         model.add(layer)
     model.add(Dense(num_classes, activation="softmax"))
-    model.compile(
-        loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
-    )
+    model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
     model.summary()
 
     epochs = 20

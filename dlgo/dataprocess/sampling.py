@@ -33,8 +33,7 @@ class Sampler:
             return self.draw_all_training()
         else:
             raise ValueError(
-                data_type
-                + " is not a valid dataprocess type, choose from 'train' or 'test'"
+                data_type + " is not a valid dataprocess type, choose from 'train' or 'test'"
             )
 
     def draw_samples(self, num_sample_games):

@@ -29,9 +29,7 @@ def end_to_end():
     for layer in network_layers:
         model.add(layer)
     model.add(Dense(nb_classes, activation="softmax"))
-    model.compile(
-        loss="categorical_crossentropy", optimizer="adadelta", metrics=["accuracy"]
-    )
+    model.compile(loss="categorical_crossentropy", optimizer="adadelta", metrics=["accuracy"])
     model.summary()
 
     model.fit(X, y, batch_size=128, epochs=1, verbose=1)

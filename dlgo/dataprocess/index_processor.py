@@ -99,9 +99,7 @@ class KGSIndex:
         """Create the actual index representation from the previously downloaded or cached html."""
         index_contents = self.create_index_page()
         split_page = [
-            item
-            for item in index_contents.split('<a href="')
-            if item.startswith("https://")
+            item for item in index_contents.split('<a href="') if item.startswith("https://")
         ]
         for item in split_page:
             download_url = item.split('">Download')[0]
@@ -112,9 +110,7 @@ class KGSIndex:
             split_file_name = filename.split("-")
             num_games = int(split_file_name[len(split_file_name) - 2])
             print(filename + " " + str(num_games))
-            self.file_info.append(
-                {"url": url, "filename": filename, "num_games": num_games}
-            )
+            self.file_info.append({"url": url, "filename": filename, "num_games": num_games})
 
 
 if __name__ == "__main__":

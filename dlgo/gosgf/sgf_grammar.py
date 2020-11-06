@@ -422,9 +422,7 @@ def main_sequence_iter(game_tree):
         game_tree = game_tree.children[0]
 
 
-_split_compose_re = re.compile(
-    r"( (?: [^\\:] | \\. )* ) :".encode("ascii"), re.VERBOSE | re.DOTALL
-)
+_split_compose_re = re.compile(r"( (?: [^\\:] | \\. )* ) :".encode("ascii"), re.VERBOSE | re.DOTALL)
 
 
 def parse_compose(s):

@@ -1,6 +1,7 @@
 import os
 from dotenv import load_dotenv
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
+from flask_cors import CORS
 
 from dlgo import agent
 from dlgo import goboard_fast as goboard
@@ -12,10 +13,11 @@ def get_web_app(bot_map):
     load_dotenv(verbose=True)
     static_path = os.getenv("STATIC_DIR")
     app = Flask(__name__, static_folder=static_path, static_url_path="/static")
+    CORS(app)
 
     @app.route("/user")
     def userhome():
-        return "user home."
+        return jsonify(user="joe")
 
     @app.route("/select-move/<bot_name>", methods=["POST"])
     def select_move(bot_name):
@@ -39,9 +41,7 @@ def get_web_app(bot_map):
             bot_move_str = "resign"
         else:
             bot_move_str = coords_from_point(bot_move.point)
-        return jsonify(
-            {"bot_move": bot_move_str, "diagnostics": bot_agent.diagnostics()}
-        )
+        return jsonify({"bot_move": bot_move_str, "diagnostics": bot_agent.diagnostics()})
 
     return app
 

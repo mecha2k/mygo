@@ -29,9 +29,7 @@ def train_consolidate():
     for layer in network_layers:
         model.add(layer)
     model.add(Dense(num_classes, activation="softmax"))
-    model.compile(
-        loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"]
-    )
+    model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
     model.summary()
 
     epochs = 1
