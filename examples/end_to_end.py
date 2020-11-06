@@ -8,6 +8,7 @@ from multiprocessing import freeze_support
 from dotenv import load_dotenv
 
 from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
+from dlgo.agent.naive import RandomBot
 from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.httpfront import get_web_app
@@ -21,7 +22,6 @@ def end_to_end():
     processor = GoDataProcessor(encoder=encoder.name())
 
     X, y = processor.load_go_data(num_samples=10)
-    X = tf.transpose(X, perm=[0, 2, 3, 1])
 
     input_shape = (go_board_rows, go_board_cols, encoder.num_planes)
     model = Sequential()
@@ -42,13 +42,20 @@ def end_to_end():
     deep_learning_bot = DeepLearningAgent(model, encoder)
     deep_learning_bot.serialize(h5py.File(AGENT_DIR + "/deep_bot.h5", "w"))
 
-    # model_file = h5py.File("../agents/deep_bot.h5", "r")
-    # bot_from_file = load_prediction_agent(model_file)
-    #
-    # web_app = get_web_app({"predict": bot_from_file})
-    # web_app.run()
+    model_file = h5py.File(AGENT_DIR + "/deep_bot.h5", "r")
+    bot_from_file = load_prediction_agent(model_file)
+
+    web_app = get_web_app({"predict": bot_from_file})
+    web_app.run()
+
+
+def web_run():
+    random_agent = RandomBot()
+    web_app = get_web_app({"random": random_agent})
+    web_app.run(debug=True)
 
 
 if __name__ == "__main__":
     freeze_support()
-    end_to_end()
+    # end_to_end()
+    web_run()

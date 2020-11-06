@@ -80,6 +80,7 @@ function stopWaiting(botmove) {
 }
 
 jsetup.setOptions({ stars: { points: 5 } })
+
 jsetup.create("board", function (canvas) {
   canvas.addListener("click", function (coord, ev) {
     if (waitingForBot) {
