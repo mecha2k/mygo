@@ -13,14 +13,14 @@ var Coordinate = require("./coordinate")
  * @param {Object} sources A dictionary of sources to load.
  * @param {function} callback A callback function to call with image dict.
  */
-exports.loadImages = function (sources, callback) {
+exports.loadImages = function(sources, callback) {
   var images = {},
     imagesLeft = 0
 
   for (var src in sources) // count non-false properties as images
     if (sources.hasOwnProperty(src) && sources[src]) imagesLeft++
 
-  var countdown = function () {
+  var countdown = function() {
     if (--imagesLeft <= 0) {
       callback(images)
     }
@@ -44,7 +44,7 @@ exports.loadImages = function (sources, callback) {
  * @param {itn} num Number of handicap stones.
  * @returns {Array} Array of Coordinate objects.
  */
-exports.getHandicapCoordinates = function (size, num) {
+exports.getHandicapCoordinates = function(size, num) {
   // Telephone dial style numbering
   var handicapPlaces = [
     [],
@@ -82,7 +82,7 @@ exports.getHandicapCoordinates = function (size, num) {
  * @param {Object} src Source object which properties will be copied.
  * @returns {Object} Extended destination object.
  */
-exports.extend = function (dest, src) {
+exports.extend = function(dest, src) {
   for (var key in src) {
     if (src.hasOwnProperty(key)) {
       if (typeof src[key] === "object") {

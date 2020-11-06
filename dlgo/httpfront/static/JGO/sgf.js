@@ -456,7 +456,7 @@ function gameTreeToRecord(gameTree, moveMarks) {
  * @param {bool} moveMarks Create move and ko marks in the record.
  * @returns {Object} Record object, array of them, or string on error.
  */
-exports.load = function (sgf, moveMarks) {
+exports.load = function(sgf, moveMarks) {
   var gameTree = parseSGF(sgf)
 
   if (gameTree === false) return ERROR
