@@ -1,4 +1,4 @@
-var BOARD_SIZE = 9
+var BOARD_SIZE = 19
 var jrecord = new JGO.Record(BOARD_SIZE)
 var jboard = jrecord.jboard
 var jsetup = new JGO.Setup(jboard, JGO.BOARD.largeWalnut)
@@ -106,7 +106,7 @@ jsetup.create("board", function(canvas) {
     applyMove(JGO.BLACK, coord)
 
     waitForBot()
-    fetch("/select-move/random", {
+    fetch("/select-move/mcts", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

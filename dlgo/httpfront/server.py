@@ -17,7 +17,10 @@ def get_web_app(bot_map):
     static_path = os.path.join(here, "static")
     template_path = os.path.join(here, "templates")
     app = Flask(
-        __name__, static_url_path="", static_folder=static_path, template_folder=template_path,
+        __name__,
+        static_url_path="",
+        static_folder=static_path,
+        template_folder=template_path,
     )
     app.config["TEMPLATES_AUTO_RELOAD"] = True
     app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
@@ -36,7 +39,7 @@ def get_web_app(bot_map):
         if mycity is None:
             mycity = "Seoul"
 
-        response = make_response(render_template("play_random_99.html", city=mycity))
+        response = make_response(render_template("play_predict_19.html", city=mycity))
 
         expires = datetime.datetime.now() + datetime.timedelta(days=365)
         response.set_cookie("mycookie", mycookie, expires=expires)

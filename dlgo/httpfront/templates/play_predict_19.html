@@ -7,7 +7,8 @@
       content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"
     />
     <title>Board</title>
-    <link rel="stylesheet" href="style.css" />
+    <link rel="icon" href="data:;base64,iVBORw0KGgo=" />
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   </head>
   <body>
     <div>Engine: human move prediction (chapter 7)</div>
@@ -17,10 +18,14 @@
       <div id="status">Black to play</div>
       <div id="spinner" style="display: none;" class="loader"></div>
     </div>
-    <script src="iframeSizer.contentWindow.min.js"></script>
-
-    <script type="text/javascript" src="./jgoboard-latest.js"></script>
-    <script type="text/javascript" src="large/board.js"></script>
-    <script type="text/javascript" src="goscript.js"></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='jgoboard-latest.js') }}"
+    ></script>
+    <script
+      type="text/javascript"
+      src="{{ url_for('static', filename='large/board.js') }}"
+    ></script>
+    <script type="text/javascript" src="{{ url_for('static', filename='goscript.js') }}"></script>
   </body>
 </html>

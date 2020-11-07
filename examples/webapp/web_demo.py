@@ -1,5 +1,4 @@
 import argparse
-
 import h5py
 
 from dlgo import agent
@@ -34,7 +33,7 @@ def main():
         bots["ac"] = ac_bot
 
     web_app = httpfront.get_web_app(bots)
-    web_app.run(host=args.bind_address, port=args.port, threaded=False)
+    web_app.run(host=args.bind_address, port=args.port, threaded=False, debug=True)
 
 
 if __name__ == "__main__":
