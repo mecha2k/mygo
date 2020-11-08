@@ -11,14 +11,25 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}" />
   </head>
   <body>
-    <div>Engine: random bot (chapter 3)</div>
+    <div>Engine: {{agent}}</div>
     <div><a href="#" onclick="resetGame(event)">new game</a></div>
+    <div>
+      <form>
+        <label
+          >select Go Agent:
+          <select name="go_agent">
+            <option value="Random" selected>Random</option>
+            <option value="Predict">Predict</option>
+          </select>
+        </label>
+        <input type="submit" value="Run" onclick="resetGame(event)" />
+      </form>
+    </div>
     <div id="board"></div>
     <div>
       <div id="status">Black to play</div>
       <div id="spinner" style="display: none;" class="loader"></div>
     </div>
-    <!--    <script src="iframeSizer.contentWindow.min.js"></script>-->
     <script
       type="text/javascript"
       src="{{ url_for('static', filename='jgoboard-latest.js') }}"
@@ -27,6 +38,6 @@
       type="text/javascript"
       src="{{ url_for('static', filename='large/board.js') }}"
     ></script>
-    <script type="text/javascript" src="{{ url_for('static', filename='go-random.js') }}"></script>
+    <script type="text/javascript" src="{{ url_for('static', filename=scriptfile) }}"></script>
   </body>
 </html>

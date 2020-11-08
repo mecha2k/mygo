@@ -39,7 +39,14 @@ def get_web_app(bot_map):
         if mycity is None:
             mycity = "Seoul"
 
-        response = make_response(render_template("play_predict_19.html", city=mycity))
+        agent = request.args.get("go_agent")
+        if agent is None:
+            agent = "random bot (chap03)"
+            scriptfile = "go-random.js"
+
+        agent = "predict bot (chap07)"
+        scriptfile = "go-predict.js"
+        response = make_response(render_template("play_go.html", agent=agent, scriptfile=scriptfile))
 
         expires = datetime.datetime.now() + datetime.timedelta(days=365)
         response.set_cookie("mycookie", mycookie, expires=expires)

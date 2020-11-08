@@ -1,5 +1,5 @@
 var BOARD_SIZE = 19
-var jrecord = new JGO.Record(BOARD_SIZE)
+var jrecord = new JGO.Record(BOARD_SIZE, BOARD_SIZE)
 var jboard = jrecord.jboard
 var jsetup = new JGO.Setup(jboard, JGO.BOARD.largeWalnut)
 var player = JGO.BLACK // next player
@@ -9,7 +9,27 @@ var lastHover = false
 var lastX = -1
 var lastY = -1 // hover helper vars
 var record = []
-var colnames = ["A", "B", "C", "D", "E", "F", "G", "H", "J", "K", "L", "M", "N"]
+var colnames = [
+  "A",
+  "B",
+  "C",
+  "D",
+  "E",
+  "F",
+  "G",
+  "H",
+  "J",
+  "K",
+  "L",
+  "M",
+  "N",
+  "O",
+  "P",
+  "Q",
+  "R",
+  "S",
+  "T"
+]
 var waitingForBot = false
 
 function resetGame(ev) {
@@ -86,7 +106,7 @@ jsetup.create("board", function(canvas) {
     if (waitingForBot) {
       return
     }
-    // var opponent = player === JGO.BLACK ? JGO.WHITE : JGO.BLACK
+    var opponent = player === JGO.BLACK ? JGO.WHITE : JGO.BLACK
 
     if (ev.shiftKey) {
       // on shift do edit
@@ -106,7 +126,7 @@ jsetup.create("board", function(canvas) {
     applyMove(JGO.BLACK, coord)
 
     waitForBot()
-    fetch("/select-move/mcts", {
+    fetch("/select-move/predict", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"

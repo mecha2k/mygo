@@ -1,5 +1,7 @@
 import argparse
 import h5py
+import os
+from dotenv import load_dotenv
 
 from dlgo import agent
 from dlgo import httpfront
@@ -31,6 +33,13 @@ def main():
         ac_bot = reinforce.load_ac_agent(h5py.File(args.ac_agent))
         ac_bot.set_temperature(0.05)
         bots["ac"] = ac_bot
+
+    load_dotenv(verbose=True)
+    static_path = os.getenv("AGENT_DIR")
+    bot_file = static_path + "/deep_bot.h5"
+    model_file = h5py.File(bot_file, "r")
+    bot_from_file = agent.load_prediction_agent(model_file)
+    bots = {"predict": bot_from_file}
 
     web_app = httpfront.get_web_app(bots)
     web_app.run(host=args.bind_address, port=args.port, threaded=False, debug=True)

@@ -3,4 +3,4 @@ from dlgo.httpfront.server import get_web_app
 
 random_agent = RandomBot()
 web_app = get_web_app({"random": random_agent})
-web_app.run(debug=True, port=5000)
+web_app.run(debug=True, port=9000)
