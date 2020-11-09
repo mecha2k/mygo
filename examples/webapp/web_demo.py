@@ -1,6 +1,7 @@
 import argparse
 import h5py
 import os
+import tensorflow as tf
 from dotenv import load_dotenv
 
 from dlgo import agent
@@ -10,6 +11,13 @@ from dlgo import reinforce
 
 
 def main():
+    gpus = tf.config.experimental.list_physical_devices("GPU")
+    if gpus:
+        try:
+            tf.config.experimental.set_memory_growth(gpus[0], True)
+        except RuntimeError as e:
+            print(e)
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--bind-address", default="127.0.0.1")
     parser.add_argument("--port", "-p", type=int, default=5000)
@@ -36,7 +44,7 @@ def main():
 
     load_dotenv(verbose=True)
     static_path = os.getenv("AGENT_DIR")
-    bot_file = static_path + "/deep_bot.h5"
+    bot_file = static_path + "/deep_bot_h5py.h5"
     model_file = h5py.File(bot_file, "r")
     bot_from_file = agent.load_prediction_agent(model_file)
     bots = {"predict": bot_from_file}

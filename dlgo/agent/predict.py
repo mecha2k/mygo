@@ -1,4 +1,5 @@
 import numpy as np
+import tensorflow as tf
 
 from dlgo.agent.base import Agent
 from dlgo.agent.helpers import is_point_an_eye

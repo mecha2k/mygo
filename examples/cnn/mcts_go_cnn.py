@@ -4,6 +4,17 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+import tensorflow as tf
+
+gpus = tf.config.experimental.list_physical_devices("GPU")
+if gpus:
+    try:
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+    except RuntimeError as e:
+        print(e)
+
+# from multiprocessing import freeze_support
+# freeze_support()
 
 np.random.seed(123)
 X = np.load("../generated/features-40k.npy")
@@ -20,13 +31,7 @@ Y_train, Y_test = Y[:train_samples], Y[train_samples:]
 
 model = Sequential()
 model.add(
-    Conv2D(
-        48,
-        kernel_size=(3, 3),
-        activation="relu",
-        padding="same",
-        input_shape=input_shape,
-    )
+    Conv2D(48, kernel_size=(3, 3), activation="relu", padding="same", input_shape=input_shape,)
 )
 model.add(Dropout(rate=0.5))
 model.add(Conv2D(48, (3, 3), padding="same", activation="relu"))
@@ -40,12 +45,7 @@ model.summary()
 
 model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
 model.fit(
-    X_train,
-    Y_train,
-    batch_size=64,
-    epochs=10,
-    verbose=1,
-    validation_data=(X_test, Y_test),
+    X_train, Y_train, batch_size=64, epochs=1, verbose=1, validation_data=(X_test, Y_test),
 )
 score = model.evaluate(X_test, Y_test, verbose=0)
 print("Test loss:", score[0])

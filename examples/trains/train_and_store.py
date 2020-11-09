@@ -19,8 +19,8 @@ def train_and_store():
     processor = GoDataProcessor(encoder=encoder.name())
 
     input_channels = encoder.num_planes
-    input_shape = (go_board_rows, go_board_cols, input_channels)
-    X, y = processor.load_go_data(num_samples=20)
+    input_shape = (input_channels, go_board_rows, go_board_cols)
+    X, y = processor.load_go_data(num_samples=2)
 
     model = Sequential()
     network_layers = layers(input_shape)
@@ -30,7 +30,7 @@ def train_and_store():
     model.compile(loss="categorical_crossentropy", optimizer="adadelta", metrics=["accuracy"])
     model.summary()
 
-    model.fit(X, y, batch_size=128, epochs=10, verbose=1)
+    model.fit(X, y, batch_size=128, epochs=1, verbose=1)
 
     load_dotenv(verbose=True)
     AGENT_DIR = os.getenv("AGENT_DIR")

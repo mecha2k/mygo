@@ -5,6 +5,14 @@ from __future__ import print_function
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
+import tensorflow as tf
+
+gpus = tf.config.experimental.list_physical_devices("GPU")
+if gpus:
+    try:
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+    except RuntimeError as e:
+        print(e)
 
 np.random.seed(123)
 X = np.load("../generated/features-40k.npy")
@@ -26,7 +34,7 @@ model.add(Dense(board_size, activation="sigmoid"))
 model.summary()
 
 model.compile(loss="mean_squared_error", optimizer="sgd", metrics=["accuracy"])
-model.fit(X_train, Y_train, batch_size=64, epochs=15, verbose=1, validation_data=(X_test, Y_test))
+model.fit(X_train, Y_train, batch_size=64, epochs=1, verbose=1, validation_data=(X_test, Y_test))
 
 score = model.evaluate(X_test, Y_test, verbose=0)
 print("Test loss:", score[0])

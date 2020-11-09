@@ -9,9 +9,10 @@ import shutil
 import numpy as np
 import multiprocessing
 import sys
-import tensorflow as tf
 from keras.utils import to_categorical
 from dotenv import load_dotenv
+from multiprocessing import freeze_support
+import tensorflow as tf
 
 from dlgo.gosgf import Sgf_game
 from dlgo.goboard_fast import Board, GameState, Move
@@ -32,6 +33,14 @@ def worker(jobinfo):
 
 class GoDataProcessor:
     def __init__(self, encoder="simple"):
+        gpus = tf.config.experimental.list_physical_devices("GPU")
+        if gpus:
+            try:
+                tf.config.experimental.set_memory_growth(gpus[0], True)
+            except RuntimeError as e:
+                print(e)
+        freeze_support()
+
         load_dotenv(verbose=True)
         DATA_DIR = os.getenv("DATA_DIR")
 
@@ -148,7 +157,6 @@ class GoDataProcessor:
                 label_list.append(y)
 
         features = np.concatenate(feature_list, axis=0)
-        features = tf.transpose(features, perm=[0, 2, 3, 1])
         labels = np.concatenate(label_list, axis=0)
 
         feature_file = self.data_dir + "/" + name

@@ -29,7 +29,6 @@ class DataGenerator:
                 x = np.load(feature_file)
                 y = np.load(label_file)
                 x = x.astype("float32")
-                x = tf.transpose(x, perm=[0, 2, 3, 1])
                 y = to_categorical(y.astype(int), num_classes)
                 while x.shape[0] >= batch_size:
                     x_batch, x = x[:batch_size], x[batch_size:]
