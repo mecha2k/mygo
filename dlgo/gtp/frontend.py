@@ -101,28 +101,34 @@ class GTPFrontend:
     def handle_known_command(self, command_name):
         return response.bool_response(command_name in self.handlers.keys())
 
-    def handle_boardsize(self, size):
-        if int(size) != 19:
-            return response.error("Only 19x19 currently supported, requested {}".format(size))
-        return response.success()
-
     def handle_showboard(self):
         print_board(self.game_state.board)
         return response.success()
 
-    def handle_time_left(self, color, time, stones):
+    @staticmethod
+    def handle_boardsize(size):
+        if int(size) != 19:
+            return response.error("Only 19x19 currently supported, requested {}".format(size))
+        return response.success()
+
+    @staticmethod
+    def handle_time_left(color, time, stones):
         # TODO: Arguments: color color, int time, int stones
         return response.success()
 
-    def handle_time_settings(self, main_time, byo_yomi_time, byo_yomi_stones):
+    @staticmethod
+    def handle_time_settings(main_time, byo_yomi_time, byo_yomi_stones):
         # TODO: Arguments: int main_time, int byo_yomi_time, int byo_yomi_stones
         return response.success()
 
-    def handle_unknown(self, *args):
+    @staticmethod
+    def handle_unknown(*args):
         return response.error("Unrecognized command")
 
-    def ignore(self, *args):
+    @staticmethod
+    def ignore(*args):
         return response.success()
 
-    def handle_protocol_version(self):
+    @staticmethod
+    def handle_protocol_version():
         return response.success("2")
