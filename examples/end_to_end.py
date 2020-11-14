@@ -12,7 +12,7 @@ from dlgo.agent.naive import RandomBot
 from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.httpfront import get_web_app
-from dlgo.neuralnet import large
+from dlgo.neuralnet import small
 
 
 def end_to_end():
@@ -25,14 +25,14 @@ def end_to_end():
 
     input_shape = (go_board_rows, go_board_cols, encoder.num_planes)
     model = Sequential()
-    network_layers = large.layers(input_shape)
+    network_layers = small.layers(input_shape)
     for layer in network_layers:
         model.add(layer)
     model.add(Dense(nb_classes, activation="softmax"))
     model.compile(loss="categorical_crossentropy", optimizer="adadelta", metrics=["accuracy"])
     model.summary()
 
-    model.fit(X, y, batch_size=128, epochs=1, verbose=1)
+    model.fit(X, y, batch_size=128, epochs=100, verbose=1)
 
     load_dotenv(verbose=True)
     AGENT_DIR = os.getenv("AGENT_DIR")
@@ -40,11 +40,11 @@ def end_to_end():
     deep_learning_bot = DeepLearningAgent(model, encoder)
     deep_learning_bot.serialize(h5py.File(AGENT_DIR + "/deep_bot.h5", "w"))
 
-    model_file = h5py.File(AGENT_DIR + "/deep_bot.h5", "r")
-    bot_from_file = load_prediction_agent(model_file)
-
-    web_app = get_web_app({"predict": bot_from_file})
-    web_app.run()
+    # model_file = h5py.File(AGENT_DIR + "/deep_bot.h5", "r")
+    # bot_from_file = load_prediction_agent(model_file)
+    #
+    # web_app = get_web_app({"predict": bot_from_file})
+    # web_app.run()
 
 
 def web_run():
@@ -55,5 +55,5 @@ def web_run():
 
 if __name__ == "__main__":
     freeze_support()
-    # end_to_end()
-    web_run()
+    end_to_end()
+    # web_run()

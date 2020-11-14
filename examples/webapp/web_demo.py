@@ -35,8 +35,11 @@ def main():
         bots["ac"] = ac_bot
 
     load_dotenv(verbose=True)
-    static_path = os.getenv("AGENT_DIR")
-    bot_file = static_path + "/deep_bot.h5"
+    agent_path = os.getenv("AGENT_DIR")
+
+    deep_learning_bot = agent.DeepLearningAgent(model, encoder)
+    deep_learning_bot.serialize(h5py.File(agent_path + "/deep_bot.h5", "w"))
+
     model_file = h5py.File(bot_file, "r")
     bot_from_file = agent.load_prediction_agent(model_file)
     bots = {"predict": bot_from_file}
