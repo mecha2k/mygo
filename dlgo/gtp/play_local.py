@@ -2,7 +2,9 @@ from __future__ import print_function
 
 import subprocess
 import re
+import os
 import h5py
+from dotenv import load_dotenv
 
 from dlgo.agent.predict import load_prediction_agent
 from dlgo.agent.termination import PassWhenOpponentPasses, TerminationAgent
@@ -26,18 +28,19 @@ class LocalGtpBot:
         output_sgf="out.sgf",
         our_color="b",
     ):
-        self.bot = TerminationAgent(go_bot, termination)  # <1>
+        self.bot = TerminationAgent(go_bot, termination)
         self.handicap = handicap
-        self._stopped = False  # <2>
+        self._stopped = False
         self.game_state = GameState.new_game(19)
-        self.sgf = SGFWriter(output_sgf)  # <3>
+        self.sgf = SGFWriter(output_sgf)
 
         self.our_color = Player.black if our_color == "b" else Player.white
         self.their_color = self.our_color.other
 
-        cmd = self.opponent_cmd(opponent)  # <4>
+        cmd = self.opponent_cmd(opponent)
         pipe = subprocess.PIPE
-        self.gtp_stream = subprocess.Popen(cmd, stdin=pipe, stdout=pipe)  # <5>
+        self.gtp_stream = subprocess.Popen(cmd, stdin=pipe, stdout=pipe)
+        print(self.gtp_stream)
 
     @staticmethod
     def opponent_cmd(opponent):
@@ -47,12 +50,6 @@ class LocalGtpBot:
             return ["pachi"]
         else:
             raise ValueError("Unknown bot name {}".format(opponent))
-
-    # <1> We initialize a bot from an agent and a termination strategy.
-    # <2> We play until the game is stopped by one of the players.
-    # <3> At the end we write the the game to the provided file in SGF format
-    # <4> Our opponent will either be GNU Go or Pachi.
-    # <5> We read and write GTP commands from the command line.
 
     def send_command(self, cmd):
         self.gtp_stream.stdin.write(cmd.encode("utf-8"))
@@ -139,7 +136,9 @@ class LocalGtpBot:
 
 
 if __name__ == "__main__":
-    bot = load_prediction_agent(h5py.File("../../agents/betago.hdf5", "r"))
+    load_dotenv(verbose=True)
+    AGENT_DIR = os.getenv("AGENT_DIR")
+    bot = load_prediction_agent(h5py.File(AGENT_DIR + "/deep_bot_h5py.h5", "r"))
     gnu_go = LocalGtpBot(
         go_bot=bot,
         termination=PassWhenOpponentPasses(),

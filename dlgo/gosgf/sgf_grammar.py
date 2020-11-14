@@ -28,9 +28,7 @@ import six
 
 
 _propident_re = re.compile(r"\A[A-Z]{1,8}\Z".encode("ascii"))
-_propvalue_re = re.compile(
-    r"\A [^\\\]]* (?: \\. [^\\\]]* )* \Z".encode("ascii"), re.VERBOSE | re.DOTALL
-)
+_propvalue_re = re.compile(r"\A [^\\\]]* (?: \\. [^\\\]]* )* \Z".encode("ascii"), re.VERBOSE | re.DOTALL)
 _find_start_re = re.compile(r"\(\s*;".encode("ascii"))
 _tokenise_re = re.compile(
     r"""

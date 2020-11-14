@@ -23,7 +23,7 @@ def train_consolidate():
     x_train, y_train = processor.load_go_data("train", num_games)
     x_test, y_test = processor.load_go_data("test", num_games)
 
-    input_shape = (go_board_rows, go_board_cols, encoder.num_planes)
+    input_shape = (encoder.num_planes, go_board_rows, go_board_cols)
     network_layers = small.layers(input_shape)
     model = Sequential()
     for layer in network_layers:

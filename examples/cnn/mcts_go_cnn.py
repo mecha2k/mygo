@@ -4,6 +4,17 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+import tensorflow as tf
+
+gpus = tf.config.experimental.list_physical_devices("GPU")
+if gpus:
+    try:
+        tf.config.experimental.set_memory_growth(gpus[0], True)
+    except RuntimeError as e:
+        print(e)
+
+# from multiprocessing import freeze_support
+# freeze_support()
 
 np.random.seed(123)
 X = np.load("../generated/features-40k.npy")
@@ -43,7 +54,7 @@ model.fit(
     X_train,
     Y_train,
     batch_size=64,
-    epochs=10,
+    epochs=1,
     verbose=1,
     validation_data=(X_test, Y_test),
 )
