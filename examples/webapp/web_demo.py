@@ -44,7 +44,7 @@ def main():
 
     load_dotenv(verbose=True)
     static_path = os.getenv("AGENT_DIR")
-    bot_file = static_path + "/deep_bot_h5py.h5"
+    bot_file = static_path + "/my_deep_bot.h5"
     model_file = h5py.File(bot_file, "r")
     bot_from_file = agent.load_prediction_agent(model_file)
     bots = {"predict": bot_from_file}
