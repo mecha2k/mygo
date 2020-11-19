@@ -1,6 +1,8 @@
 import argparse
 from collections import namedtuple
+from dotenv import load_dotenv
 
+import os
 import h5py
 
 from dlgo import agent
@@ -8,7 +10,7 @@ from dlgo import scoring
 from dlgo.goboard_fast import GameState, Player, Point
 
 
-BOARD_SIZE = 9
+BOARD_SIZE = 19
 COLS = "ABCDEFGHJKLMNOPQRST"
 STONE_TO_CHAR = {
     None: ".",
@@ -61,23 +63,23 @@ def simulate_game(black_player, white_player):
     game_result = scoring.compute_game_result(game)
     print(game_result)
 
-    return GameRecord(
-        moves=moves,
-        winner=game_result.winner,
-        margin=game_result.winning_margin,
-    )
+    return GameRecord(moves=moves, winner=game_result.winner, margin=game_result.winning_margin,)
 
 
 def main():
+    load_dotenv(verbose=True)
+    AGENT_DIR = os.getenv("AGENT_DIR")
+    agent_file = AGENT_DIR + "/my_deep_bot.h5"
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--agent1", required=True)
-    parser.add_argument("--agent2", required=True)
+    parser.add_argument("--agent1", default=agent_file)
+    parser.add_argument("--agent2", default=agent_file)
     parser.add_argument("--num-games", "-n", type=int, default=10)
 
     args = parser.parse_args()
 
-    agent1 = agent.load_policy_agent(h5py.File(args.agent1))
-    agent2 = agent.load_policy_agent(h5py.File(args.agent2))
+    agent1 = agent.load_policy_agent(h5py.File(args.agent1, "r"))
+    agent2 = agent.load_policy_agent(h5py.File(args.agent2, "r"))
 
     wins = 0
     losses = 0

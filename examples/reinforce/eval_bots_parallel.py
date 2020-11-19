@@ -4,6 +4,7 @@ import os
 import random
 import time
 from collections import namedtuple
+from dotenv import load_dotenv
 
 import h5py
 import numpy as np
@@ -60,11 +61,7 @@ def simulate_game(black_player, white_player, board_size):
     game_result = scoring.compute_game_result(game)
     print(game_result)
 
-    return GameRecord(
-        moves=moves,
-        winner=game_result.winner,
-        margin=game_result.winning_margin,
-    )
+    return GameRecord(moves=moves, winner=game_result.winner, margin=game_result.winning_margin,)
 
 
 def play_games(args):
@@ -75,8 +72,8 @@ def play_games(args):
     random.seed(int(time.time()) + os.getpid())
     np.random.seed(int(time.time()) + os.getpid())
 
-    agent1 = agent.load_policy_agent(h5py.File(agent1_fname))
-    agent2 = agent.load_policy_agent(h5py.File(agent2_fname))
+    agent1 = agent.load_policy_agent(h5py.File(agent1_fname, "r"))
+    agent2 = agent.load_policy_agent(h5py.File(agent2_fname, "r"))
 
     wins, losses = 0, 0
     color1 = Player.black
@@ -99,9 +96,13 @@ def play_games(args):
 
 
 def main():
+    load_dotenv(verbose=True)
+    AGENT_DIR = os.getenv("AGENT_DIR")
+    agent_file = AGENT_DIR + "/my_deep_bot.h5"
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--agent1", required=True)
-    parser.add_argument("--agent2", required=True)
+    parser.add_argument("--agent1", default=agent_file)
+    parser.add_argument("--agent2", default=agent_file)
     parser.add_argument("--num-games", "-n", type=int, default=10)
     parser.add_argument("--num-workers", "-w", type=int, default=1)
     parser.add_argument("--board-size", "-b", type=int, default=19)

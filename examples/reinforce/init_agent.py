@@ -18,7 +18,7 @@ def main():
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--board-size", type=int, default=9)
-    parser.add_argument("--output_file", default=DATA_DIR + "/results/simple_v2.hdf5")
+    parser.add_argument("--output_file", default=DATA_DIR + "/reinforce/simple_v2.hdf5")
     args = parser.parse_args()
 
     encoder = encoders.get_encoder_by_name("simple", args.board_size)

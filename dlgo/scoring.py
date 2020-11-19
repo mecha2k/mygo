@@ -2,16 +2,16 @@ from __future__ import absolute_import
 from collections import namedtuple
 from dlgo.gotypes import Player, Point
 
-# tag::scoring_territory[]
+
 class Territory:
-    def __init__(self, territory_map):  # <1>
+    def __init__(self, territory_map):
         self.num_black_territory = 0
         self.num_white_territory = 0
         self.num_black_stones = 0
         self.num_white_stones = 0
         self.num_dame = 0
         self.dame_points = []
-        for point, status in territory_map.items():  # <2>
+        for point, status in territory_map.items():
             if status == Player.black:
                 self.num_black_stones += 1
             elif status == Player.white:
@@ -30,7 +30,6 @@ class Territory:
 # end::scoring_territory[]
 
 
-# tag::scoring_game_result[]
 class GameResult(namedtuple("GameResult", "b w komi")):
     @property
     def winner(self):
@@ -50,9 +49,6 @@ class GameResult(namedtuple("GameResult", "b w komi")):
         return "W+%.1f" % (w - self.b,)
 
 
-# end::scoring_game_result[]
-
-
 """ evaluate_territory:
 Map a board into territory and dame.
 
@@ -62,7 +58,6 @@ trivially dead groups.
 """
 
 
-# tag::scoring_evaluate_territory[]
 def evaluate_territory(board):
 
     status = {}
@@ -91,7 +86,6 @@ def evaluate_territory(board):
 # <2> If the point is a stone, add it as status.
 # <3> If a point is completely surrounded by black or white stones, count it as territory.
 # <4> Otherwise the point has to be a neutral point, so we add it to dame.
-# end::scoring_evaluate_territory[]
 
 
 """ _collect_region:
@@ -101,7 +95,6 @@ identify all the boundary points.
 """
 
 
-# tag::scoring_collect_region[]
 def _collect_region(start_pos, board, visited=None):
     if visited is None:
         visited = {}
@@ -126,10 +119,6 @@ def _collect_region(start_pos, board, visited=None):
     return all_points, all_borders
 
 
-# end::scoring_collect_region[]
-
-
-# tag::scoring_compute_game_result[]
 def compute_game_result(game_state):
     territory = evaluate_territory(game_state.board)
     return GameResult(
@@ -137,6 +126,3 @@ def compute_game_result(game_state):
         territory.num_white_territory + territory.num_white_stones,
         komi=7.5,
     )
-
-
-# end::scoring_compute_game_result[]

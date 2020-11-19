@@ -7,6 +7,7 @@ import shutil
 import time
 import tempfile
 from collections import namedtuple
+from dotenv import load_dotenv
 
 import h5py
 import numpy as np
@@ -68,11 +69,7 @@ def simulate_game(black_player, white_player, board_size):
     game_result = scoring.compute_game_result(game)
     print(game_result)
 
-    return GameRecord(
-        moves=moves,
-        winner=game_result.winner,
-        margin=game_result.winning_margin,
-    )
+    return GameRecord(moves=moves, winner=game_result.winner, margin=game_result.winning_margin,)
 
 
 def get_temp_file():
@@ -237,13 +234,7 @@ def evaluate(learning_agent, reference_agent, num_games, num_workers, board_size
     gpu_frac = 0.95 / float(num_workers)
     pool = multiprocessing.Pool(num_workers)
     worker_args = [
-        (
-            learning_agent,
-            reference_agent,
-            games_per_worker,
-            board_size,
-            gpu_frac,
-        )
+        (learning_agent, reference_agent, games_per_worker, board_size, gpu_frac,)
         for _ in range(num_workers)
     ]
     game_results = pool.map(play_games, worker_args)
@@ -261,16 +252,22 @@ def evaluate(learning_agent, reference_agent, num_games, num_workers, board_size
 
 
 def main():
+    load_dotenv(verbose=True)
+    DATA_DIR = os.getenv("DATA_DIR")
+    AGENT_DIR = os.getenv("AGENT_DIR")
+    agent_file = AGENT_DIR + "/my_deep_bot.h5"
+    log_file = DATA_DIR + "/reinforce/play_train.log"
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--agent", required=True)
-    parser.add_argument("--games-per-batch", "-g", type=int, default=1000)
-    parser.add_argument("--work-dir", "-d")
+    parser.add_argument("--agent", default=agent_file)
+    parser.add_argument("--games-per-batch", "-g", type=int, default=2)
+    parser.add_argument("--work-dir", "-d", default=DATA_DIR + "/reinforce")
     parser.add_argument("--num-workers", "-w", type=int, default=1)
-    parser.add_argument("--temperature", "-t", type=float, default=0.0)
+    parser.add_argument("--temperature", "-t", type=float, default=0.05)
     parser.add_argument("--board-size", "-b", type=int, default=19)
     parser.add_argument("--lr", type=float, default=0.01)
     parser.add_argument("--bs", type=int, default=512)
-    parser.add_argument("--log-file", "-l")
+    parser.add_argument("--log-file", "-l", default=log_file)
 
     args = parser.parse_args()
 

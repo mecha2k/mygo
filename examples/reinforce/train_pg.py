@@ -10,9 +10,10 @@ from dlgo import reinforce
 def main():
     load_dotenv(verbose=True)
     DATA_DIR = os.getenv("DATA_DIR")
-    agent_file = DATA_DIR + "/results/simple_v1.hdf5"
-    agent_out_file = DATA_DIR + "/results/agent_out_v1.hdf5"
-    experience_file = DATA_DIR + "/results/experience_v1.hdf5"
+    AGENT_DIR = os.getenv("AGENT_DIR")
+    agent_file = AGENT_DIR + "/my_deep_bot.h5"
+    agent_out_file = DATA_DIR + "/reinforce/agent_out_v1.hdf5"
+    experience_file = DATA_DIR + "/reinforce/experience_v1.hdf5"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--learning-agent", default=agent_file)

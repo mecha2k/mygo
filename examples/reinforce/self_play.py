@@ -11,7 +11,7 @@ from dlgo import reinforce
 from dlgo.goboard_fast import GameState, Player, Point
 
 
-BOARD_SIZE = 9
+BOARD_SIZE = 19
 COLS = "ABCDEFGHJKLMNOPQRST"
 STONE_TO_CHAR = {
     None: ".",
@@ -68,9 +68,10 @@ def simulate_game(black_player, white_player):
 def main():
     load_dotenv(verbose=True)
     DATA_DIR = os.getenv("DATA_DIR")
-    agent_file = DATA_DIR + "/results/simple_v1.hdf5"
-    game_log_file = DATA_DIR + "/results/game_v1.log"
-    experience_file = DATA_DIR + "/results/experience_v1.hdf5"
+    AGENT_DIR = os.getenv("AGENT_DIR")
+    agent_file = AGENT_DIR + "/my_deep_bot.h5"
+    game_log_file = DATA_DIR + "/reinforce/game_v1.log"
+    experience_file = DATA_DIR + "/reinforce/experience_v1.hdf5"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--learning-agent", default=agent_file)

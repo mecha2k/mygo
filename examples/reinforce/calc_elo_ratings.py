@@ -7,15 +7,15 @@ from dlgo import reinforce
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--num-games", "-g", type=int)
-    parser.add_argument("--board-size", "-b", type=int)
+    parser.add_argument("--num-games", "-g", type=int, default=10)
+    parser.add_argument("--board-size", "-b", type=int, default=19)
     parser.add_argument("agents", nargs="+")
 
     args = parser.parse_args()
 
     agents = [
         # agent.load_policy_agent(h5py.File(filename))
-        reinforce.load_q_agent(h5py.File(filename))
+        reinforce.load_q_agent(h5py.File(filename, "r"))
         for filename in args.agents
     ]
     for a in agents:
