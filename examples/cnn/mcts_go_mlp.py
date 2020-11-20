@@ -5,7 +5,9 @@ from __future__ import print_function
 import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense
+from dotenv import load_dotenv
 import tensorflow as tf
+import os
 
 gpus = tf.config.experimental.list_physical_devices("GPU")
 if gpus:
@@ -14,9 +16,12 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
+load_dotenv(verbose=True)
+DATA_DIR = os.getenv("DATA_DIR")
+
 np.random.seed(123)
-X = np.load("../generated/features-40k.npy")
-Y = np.load("../generated/labels-40k.npy")
+X = np.load(DATA_DIR + "/generated/features-40k.npy")
+Y = np.load(DATA_DIR + "/generated/labels-40k.npy")
 samples = X.shape[0]
 board_size = 9 * 9
 
@@ -34,7 +39,7 @@ model.add(Dense(board_size, activation="sigmoid"))
 model.summary()
 
 model.compile(loss="mean_squared_error", optimizer="sgd", metrics=["accuracy"])
-model.fit(X_train, Y_train, batch_size=64, epochs=1, verbose=1, validation_data=(X_test, Y_test))
+model.fit(X_train, Y_train, batch_size=64, epochs=10, verbose=1, validation_data=(X_test, Y_test))
 
 score = model.evaluate(X_test, Y_test, verbose=0)
 print("Test loss:", score[0])

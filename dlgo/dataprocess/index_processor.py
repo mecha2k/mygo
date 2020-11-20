@@ -42,12 +42,12 @@ class KGSIndex:
         data_directory: name of directory relative to current path to store SGF dataprocess
         """
         load_dotenv(verbose=True)
-        DATA_DIR = os.getenv("DATA_DIR")
+        KGS_DIR = os.getenv("KGS_DIR")
         KGS_INDEX = os.getenv("KGS_INDEX")
 
         self.kgs_url = kgs_url
         self.index_page = KGS_INDEX
-        self.data_directory = DATA_DIR
+        self.data_directory = KGS_DIR
         self.file_info = []
         self.urls = []
         self.load_index()  # Load index on creation

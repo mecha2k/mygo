@@ -42,11 +42,11 @@ class GoDataProcessor:
         freeze_support()
 
         load_dotenv(verbose=True)
-        DATA_DIR = os.getenv("DATA_DIR")
+        KGS_DIR = os.getenv("KGS_DIR")
 
         self.encoder_string = encoder
         self.encoder = get_encoder_by_name(encoder, 19)
-        self.data_dir = DATA_DIR
+        self.data_dir = KGS_DIR
 
     def load_go_data(self, data_type="train", num_samples=1000, use_generator=False):
         index = KGSIndex(data_directory=self.data_dir)

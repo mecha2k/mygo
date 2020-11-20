@@ -4,7 +4,9 @@ import numpy as np
 from keras.models import Sequential
 from keras.layers import Dense, Dropout, Flatten
 from keras.layers import Conv2D, MaxPooling2D
+from dotenv import load_dotenv
 import tensorflow as tf
+import os
 
 gpus = tf.config.experimental.list_physical_devices("GPU")
 if gpus:
@@ -13,12 +15,12 @@ if gpus:
     except RuntimeError as e:
         print(e)
 
-# from multiprocessing import freeze_support
-# freeze_support()
+load_dotenv(verbose=True)
+DATA_DIR = os.getenv("DATA_DIR")
 
 np.random.seed(123)
-X = np.load("../generated/features-40k.npy")
-Y = np.load("../generated/labels-40k.npy")
+X = np.load(DATA_DIR + "/generated/features-40k.npy")
+Y = np.load(DATA_DIR + "/generated/labels-40k.npy")
 
 samples = X.shape[0]
 size = 9
@@ -31,13 +33,7 @@ Y_train, Y_test = Y[:train_samples], Y[train_samples:]
 
 model = Sequential()
 model.add(
-    Conv2D(
-        48,
-        kernel_size=(3, 3),
-        activation="relu",
-        padding="same",
-        input_shape=input_shape,
-    )
+    Conv2D(48, kernel_size=(3, 3), activation="relu", padding="same", input_shape=input_shape,)
 )
 model.add(Dropout(rate=0.5))
 model.add(Conv2D(48, (3, 3), padding="same", activation="relu"))
@@ -51,12 +47,7 @@ model.summary()
 
 model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
 model.fit(
-    X_train,
-    Y_train,
-    batch_size=64,
-    epochs=1,
-    verbose=1,
-    validation_data=(X_test, Y_test),
+    X_train, Y_train, batch_size=128, epochs=10, verbose=1, validation_data=(X_test, Y_test),
 )
 score = model.evaluate(X_test, Y_test, verbose=0)
 print("Test loss:", score[0])
