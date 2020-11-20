@@ -70,12 +70,12 @@ def main():
     DATA_DIR = os.getenv("DATA_DIR")
     AGENT_DIR = os.getenv("AGENT_DIR")
     agent_file = AGENT_DIR + "/my_deep_bot.h5"
-    game_log_file = DATA_DIR + "/reinforce/game_v1.log"
-    experience_file = DATA_DIR + "/reinforce/experience_v1.hdf5"
+    game_log_file = DATA_DIR + "/reinforce/game_v2.log"
+    experience_file = DATA_DIR + "/reinforce/experience_v2.hdf5"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--learning-agent", default=agent_file)
-    parser.add_argument("--num-games", "-n", type=int, default=100)
+    parser.add_argument("--num-games", "-n", type=int, default=50)
     parser.add_argument("--game-log-out", default=game_log_file)
     parser.add_argument("--experience-out", default=experience_file)
     parser.add_argument("--temperature", type=float, default=0.1)

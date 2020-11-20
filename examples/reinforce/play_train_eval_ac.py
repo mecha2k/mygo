@@ -7,6 +7,7 @@ import shutil
 import time
 import tempfile
 from collections import namedtuple
+from dotenv import load_dotenv
 
 import h5py
 import numpy as np
@@ -80,11 +81,7 @@ def simulate_game(black_player, white_player, board_size):
     game_result = scoring.compute_game_result(game)
     print(game_result)
 
-    return GameRecord(
-        moves=moves,
-        winner=game_result.winner,
-        margin=game_result.winning_margin,
-    )
+    return GameRecord(moves=moves, winner=game_result.winner, margin=game_result.winning_margin,)
 
 
 def get_temp_file():
@@ -236,13 +233,7 @@ def evaluate(learning_agent, reference_agent, num_games, num_workers, board_size
     gpu_frac = 0.95 / float(num_workers)
     pool = multiprocessing.Pool(num_workers)
     worker_args = [
-        (
-            learning_agent,
-            reference_agent,
-            games_per_worker,
-            board_size,
-            gpu_frac,
-        )
+        (learning_agent, reference_agent, games_per_worker, board_size, gpu_frac,)
         for _ in range(num_workers)
     ]
     game_results = pool.map(play_games, worker_args)
@@ -260,15 +251,21 @@ def evaluate(learning_agent, reference_agent, num_games, num_workers, board_size
 
 
 def main():
+    load_dotenv(verbose=True)
+    WORK_DIR = os.getenv("DATA_DIR") + "/reinforce"
+    agent_file = WORK_DIR + "/actor_critic_agent_v1.hdf5"
+    log_file = WORK_DIR + "/actor_critic_agent.log"
+
     parser = argparse.ArgumentParser()
-    parser.add_argument("--agent", required=True)
-    parser.add_argument("--games-per-batch", "-g", type=int, default=1000)
-    parser.add_argument("--work-dir", "-d")
+    parser.add_argument("--agent", default=agent_file)
+    parser.add_argument("--games-per-batch", "-g", type=int, default=10)
+    parser.add_argument("--work-dir", "-d", default=WORK_DIR)
     parser.add_argument("--num-workers", "-w", type=int, default=1)
+    parser.add_argument("--temperature", "-t", type=float, default=0.0)
     parser.add_argument("--board-size", "-b", type=int, default=19)
     parser.add_argument("--lr", type=float, default=0.01)
     parser.add_argument("--bs", type=int, default=512)
-    parser.add_argument("--log-file", "-l")
+    parser.add_argument("--log-file", "-l", default=log_file)
 
     args = parser.parse_args()
 
@@ -282,6 +279,8 @@ def main():
     tmp_agent = os.path.join(args.work_dir, "agent_temp.hdf5")
     working_agent = os.path.join(args.work_dir, "agent_cur.hdf5")
     total_games = 0
+    num_eval_games = 10  # 480
+
     while True:
         print("Reference: %s" % (reference_agent,))
         logf.write("Total games so far %d\n" % (total_games,))
@@ -300,15 +299,20 @@ def main():
         wins = evaluate(
             learning_agent,
             reference_agent,
-            num_games=480,
+            num_games=num_eval_games,
             num_workers=args.num_workers,
             board_size=args.board_size,
         )
-        print("Won %d / 480 games (%.3f)" % (wins, float(wins) / 480.0))
-        logf.write("Won %d / 480 games (%.3f)\n" % (wins, float(wins) / 480.0))
+        print(
+            "Won %d / %d games (%.3f)" % (wins, num_eval_games, float(wins) / float(num_eval_games))
+        )
+        logf.write(
+            "Won %d / %d games (%.3f)\n"
+            % (wins, num_eval_games, float(wins) / float(num_eval_games))
+        )
         shutil.copy(tmp_agent, working_agent)
         learning_agent = working_agent
-        if wins >= 262:
+        if wins >= int(num_eval_games * 0.6):
             next_filename = os.path.join(args.work_dir, "agent_%08d.hdf5" % (total_games,))
             shutil.move(tmp_agent, next_filename)
             reference_agent = next_filename

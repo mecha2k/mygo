@@ -12,15 +12,16 @@ def main():
     DATA_DIR = os.getenv("DATA_DIR")
     AGENT_DIR = os.getenv("AGENT_DIR")
     agent_file = AGENT_DIR + "/my_deep_bot.h5"
-    agent_out_file = DATA_DIR + "/reinforce/agent_out_v1.hdf5"
-    experience_file = DATA_DIR + "/reinforce/experience_v1.hdf5"
+    agent_out_file = DATA_DIR + "/reinforce/agent_out_v2.hdf5"
+    experience_file1 = DATA_DIR + "/reinforce/experience_v1.hdf5"
+    experience_file2 = DATA_DIR + "/reinforce/experience_v2.hdf5"
 
     parser = argparse.ArgumentParser()
     parser.add_argument("--learning-agent", default=agent_file)
     parser.add_argument("--agent-out", default=agent_out_file)
     parser.add_argument("--lr", type=float, default=0.0001)
     parser.add_argument("--bs", type=int, default=512)
-    parser.add_argument("--experience", nargs="+", default=[experience_file])
+    parser.add_argument("--experience", nargs="+", default=[experience_file1, experience_file2])
     args = parser.parse_args()
 
     learning_agent = agent.load_policy_agent(h5py.File(args.learning_agent, "r"))

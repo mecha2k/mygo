@@ -1,5 +1,7 @@
 import argparse
 import h5py
+import os
+from dotenv import load_dotenv
 
 from keras.layers import Dense, Input
 from keras.models import Model
@@ -10,11 +12,14 @@ from dlgo import encoders
 
 
 def main():
+    load_dotenv(verbose=True)
+    agent_out_file = os.getenv("DATA_DIR") + "/reinforce/actor_critic_agent_v1.hdf5"
+
     parser = argparse.ArgumentParser()
     parser.add_argument("--board-size", type=int, default=19)
     parser.add_argument("--network", default="large")
     parser.add_argument("--hidden-size", type=int, default=512)
-    parser.add_argument("--output_file", default="results/ac_v1.hdf5")
+    parser.add_argument("--output_file", default=agent_out_file)
     args = parser.parse_args()
 
     encoder = encoders.get_encoder_by_name("simple", args.board_size)
