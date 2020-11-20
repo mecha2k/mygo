@@ -8,13 +8,13 @@ __all__ = ["AlphaGoNode", "AlphaGoMCTS"]
 
 class AlphaGoNode:
     def __init__(self, parent=None, probability=1.0):
-        self.parent = parent  # <1>
-        self.children = {}  # <1>
+        self.parent = parent
+        self.children = {}
 
         self.visit_count = 0
         self.q_value = 0
-        self.prior_value = probability  # <2>
-        self.u_value = probability  # <3>
+        self.prior_value = probability
+        self.u_value = probability
 
     # <1> Tree nodes have one parent and potentially many children.
     # <2> A node is initialized with a prior probability.
@@ -30,17 +30,17 @@ class AlphaGoNode:
 
     def update_values(self, leaf_value):
         if self.parent is not None:
-            self.parent.update_values(leaf_value)  # <1>
+            self.parent.update_values(leaf_value)
 
-        self.visit_count += 1  # <2>
+        self.visit_count += 1
 
-        self.q_value += leaf_value / self.visit_count  # <3>
+        self.q_value += leaf_value / self.visit_count
 
         if self.parent is not None:
             c_u = 5
             self.u_value = (
                 c_u * np.sqrt(self.parent.visit_count) * self.prior_value / (1 + self.visit_count)
-            )  # <4>
+            )
 
 
 # <1> We update parents first to ensure we traverse the tree top to bottom.
@@ -72,23 +72,23 @@ class AlphaGoMCTS(Agent):
         self.root = AlphaGoNode()
 
     def select_move(self, game_state):
-        for simulation in range(self.num_simulations):  # <1>
+        for simulation in range(self.num_simulations):
             current_state = game_state
             node = self.root
-            for depth in range(self.depth):  # <2>
-                if not node.children:  # <3>
+            for depth in range(self.depth):
+                if not node.children:
                     if current_state.is_over():
                         break
-                    moves, probabilities = self.policy_probabilities(current_state)  # <4>
-                    node.expand_children(moves, probabilities)  # <4>
+                    moves, probabilities = self.policy_probabilities(current_state)
+                    node.expand_children(moves, probabilities)
 
-                move, node = node.select_child()  # <5>
-                current_state = current_state.apply_move(move)  # <5>
+                move, node = node.select_child()
+                current_state = current_state.apply_move(move)
 
-            value = self.value.predict(current_state)  # <6>
-            rollout = self.policy_rollout(current_state)  # <6>
+            value = self.value.predict(current_state)
+            rollout = self.policy_rollout(current_state)
 
-            weighted_value = (1 - self.lambda_value) * value + self.lambda_value * rollout  # <7>
+            weighted_value = (1 - self.lambda_value) * value + self.lambda_value * rollout
 
             node.update_values(weighted_value)  # <8>
         # <1> From current state play out a number of simulations
@@ -102,10 +102,10 @@ class AlphaGoMCTS(Agent):
 
         move = max(
             self.root.children, key=lambda move: self.root.children.get(move).visit_count  # <1>
-        )  # <1>
+        )
 
         self.root = AlphaGoNode()
-        if move in self.root.children:  # <2>
+        if move in self.root.children:
             self.root = self.root.children[move]
             self.root.parent = None
 

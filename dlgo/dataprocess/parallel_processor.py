@@ -11,7 +11,6 @@ import multiprocessing
 import sys
 from keras.utils import to_categorical
 from dotenv import load_dotenv
-from multiprocessing import freeze_support
 import tensorflow as tf
 
 from dlgo.gosgf import Sgf_game
@@ -39,7 +38,6 @@ class GoDataProcessor:
                 tf.config.experimental.set_memory_growth(gpus[0], True)
             except RuntimeError as e:
                 print(e)
-        freeze_support()
 
         load_dotenv(verbose=True)
         KGS_DIR = os.getenv("KGS_DIR")
