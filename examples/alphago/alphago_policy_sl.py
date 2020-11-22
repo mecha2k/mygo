@@ -14,7 +14,7 @@ import os
 def main():
     rows, cols = 19, 19
     num_classes = rows * cols
-    num_games = 100
+    num_games = 1
 
     load_dotenv(verbose=True)
     AlphaGo_dir = os.getenv("ALPHAGO_DIR")
