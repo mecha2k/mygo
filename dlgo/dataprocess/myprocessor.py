@@ -31,17 +31,19 @@ class GoDataProcessor:
                 print(e)
 
         load_dotenv(verbose=True)
-        KGS_DIR = os.getenv("KGS_DIR")
+        DATA_DIR = os.getenv("DATA_DIR")
+        encoder_dir = DATA_DIR + "/" + encoder
+        if not os.path.isdir(encoder_dir):
+            os.makedirs(encoder_dir)
 
         self.encoder_string = encoder
         self.encoder = get_encoder_by_name(encoder, 19)
-        self.data_dir = KGS_DIR
+        self.data_dir = encoder_dir
+        self.index = KGSIndex()
+        self.index.download_files()
 
     def load_go_data(self, data_type="train", num_samples=1000, use_generator=False):
-        index = KGSIndex(data_directory=self.data_dir)
-        index.download_files()
-
-        sampler = Sampler(data_dir=self.data_dir)
+        sampler = Sampler(self.index, data_dir=self.data_dir)
         data = sampler.draw_data(data_type, num_samples)
 
         self.map_to_workers(data_type, data)
@@ -62,14 +64,17 @@ class GoDataProcessor:
     # <8> Features and labels from each zip are then aggregated and returned.
 
     def unzip_data(self, zip_file_name):
-        this_gz = gzip.open(self.data_dir + "/" + zip_file_name)
-
         tar_file = zip_file_name[0:-3]
-        this_tar = open(self.data_dir + "/" + tar_file, "wb")
+        tar_path = self.index.data_directory + "/" + tar_file
+        if os.path.isfile(tar_path):
+            return tar_path
+        else:
+            this_gz = gzip.open(self.index.data_directory + "/" + zip_file_name)
+            this_tar = open(tar_path, "wb")
+            shutil.copyfileobj(this_gz, this_tar)
+            this_tar.close()
 
-        shutil.copyfileobj(this_gz, this_tar)
-        this_tar.close()
-        return tar_file
+        return tar_path
 
     # <1> Unpack the `gz` file into a `tar` file.
     # <2> Remove ".gz" at the end to get the name of the tar file.
@@ -77,7 +82,7 @@ class GoDataProcessor:
 
     def process_zip(self, zip_file_name, data_file_name, game_list):
         tar_file = self.unzip_data(zip_file_name)
-        zip_file = tarfile.open(self.data_dir + "/" + tar_file)
+        zip_file = tarfile.open(tar_file)
         name_list = zip_file.getnames()
         total_examples = self.num_total_examples(zip_file, game_list, name_list)
 

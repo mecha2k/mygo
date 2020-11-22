@@ -13,13 +13,14 @@ from dotenv import load_dotenv
 class Sampler:
     """Sample training and test dataprocess from zipped sgf files such that test dataprocess is kept stable."""
 
-    def __init__(self, data_dir=None, num_test_games=100, cap_year=2015, seed=1337):
+    def __init__(self, kgsindex, data_dir=None, num_test_games=100, cap_year=2015, seed=100):
         self.data_dir = data_dir
         self.num_test_games = num_test_games
         self.test_games = []
         self.train_games = []
         self.test_folder = data_dir + "/test_samples.py"
         self.cap_year = cap_year
+        self.kgsindex = kgsindex
 
         random.seed(seed)
         self.compute_test_samples()
@@ -32,16 +33,13 @@ class Sampler:
         elif data_type == "train" and num_samples is None:
             return self.draw_all_training()
         else:
-            raise ValueError(
-                data_type + " is not a valid dataprocess type, choose from 'train' or 'test'"
-            )
+            raise ValueError(data_type + " is not a valid dataprocess type, choose from 'train' or 'test'")
 
     def draw_samples(self, num_sample_games):
         """Draw num_sample_games many training games from index."""
         available_games = []
-        index = KGSIndex(data_directory=self.data_dir)
 
-        for fileinfo in index.file_info:
+        for fileinfo in self.kgsindex.file_info:
             filename = fileinfo["filename"]
             year = int(filename.split("-")[1].split("_")[0])
             if year > self.cap_year:
@@ -63,8 +61,7 @@ class Sampler:
         """Get list of all non-test games, that are no later than dec 2014
         Ignore games after cap_year to keep training dataprocess stable
         """
-        index = KGSIndex(data_directory=self.data_dir)
-        for file_info in index.file_info:
+        for file_info in self.kgsindex.file_info:
             filename = file_info["filename"]
             year = int(filename.split("-")[1].split("_")[0])
             if year > self.cap_year:
@@ -96,8 +93,7 @@ class Sampler:
     def draw_training_samples(self, num_sample_games):
         """Draw training games, not overlapping with any of the test games."""
         available_games = []
-        index = KGSIndex(data_directory=self.data_dir)
-        for fileinfo in index.file_info:
+        for fileinfo in self.kgsindex.file_info:
             filename = fileinfo["filename"]
             year = int(filename.split("-")[1].split("_")[0])
             if year > self.cap_year:
@@ -118,9 +114,7 @@ class Sampler:
     def draw_all_training(self):
         """Draw all available training games."""
         available_games = []
-        index = KGSIndex(data_directory=self.data_dir)
-
-        for fileinfo in index.file_info:
+        for fileinfo in self.kgsindex.file_info:
             filename = fileinfo["filename"]
             year = int(filename.split("-")[1].split("_")[0])
             if year > self.cap_year:

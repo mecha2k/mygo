@@ -27,12 +27,7 @@ def worker(url_and_target):  # Parallelize dataprocess download via multiprocess
 
 
 class KGSIndex:
-    def __init__(
-        self,
-        kgs_url="http://u-go.net/gamerecords/",
-        index_page=None,
-        data_directory=None,
-    ):
+    def __init__(self, kgs_url="http://u-go.net/gamerecords/"):
         """Create an index of zip files containing SGF dataprocess of actual Go Games on KGS.
 
         Parameters:
@@ -107,7 +102,7 @@ class KGSIndex:
             filename = os.path.basename(url)
             split_file_name = filename.split("-")
             num_games = int(split_file_name[len(split_file_name) - 2])
-            print(filename + " " + str(num_games))
+            # print(filename + " " + str(num_games))
             self.file_info.append({"url": url, "filename": filename, "num_games": num_games})
 
 
