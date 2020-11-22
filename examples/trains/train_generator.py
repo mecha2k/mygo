@@ -5,6 +5,8 @@ from keras.callbacks import ModelCheckpoint
 import os
 
 from dlgo.dataprocess.myprocessor import GoDataProcessor
+from dlgo.encoders.simple import SimpleEncoder
+from dlgo.encoders.alphago import AlphaGoEncoder
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
 from dlgo.neuralnet import large
@@ -16,6 +18,8 @@ def train_generator():
     num_games = 100
 
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
+    # encoder = SimpleEncoder((go_board_rows, go_board_cols))
+    # encoder = AlphaGoEncoder()
     processor = GoDataProcessor(encoder=encoder.name())
 
     train_gen = processor.load_go_data("train", num_games, use_generator=True)
