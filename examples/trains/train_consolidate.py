@@ -1,23 +1,16 @@
-from dlgo.dataprocess.parallel_processor import GoDataProcessor
-from dlgo.dataprocess.generator import DataGenerator
-from dlgo.encoders.oneplane import OnePlaneEncoder
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
+from dlgo.dataprocess.myprocessor import GoDataProcessor
 from dlgo.neuralnet import small
 
-import os
 from keras.models import Sequential
 from keras.layers.core import Dense
-from keras.callbacks import ModelCheckpoint
-from multiprocessing import freeze_support
-from dotenv import load_dotenv
 
 
 def train_consolidate():
     go_board_rows, go_board_cols = 19, 19
     num_classes = go_board_rows * go_board_cols
-    num_games = 2
+    num_games = 10
 
-    # encoder = OnePlaneEncoder((go_board_rows, go_board_cols))
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
     processor = GoDataProcessor(encoder=encoder.name())
     x_train, y_train = processor.load_go_data("train", num_games)
@@ -48,5 +41,4 @@ def train_consolidate():
 
 
 if __name__ == "__main__":
-    freeze_support()
     train_consolidate()

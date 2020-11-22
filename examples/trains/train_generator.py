@@ -14,7 +14,7 @@ from dlgo.neuralnet import large
 def train_generator():
     go_board_rows, go_board_cols = 19, 19
     num_classes = go_board_rows * go_board_cols
-    num_games = 1000
+    num_games = 100
 
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
     processor = GoDataProcessor(encoder=encoder.name())
@@ -31,7 +31,7 @@ def train_generator():
     model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
     model.summary()
 
-    epochs = 100
+    epochs = 10
     batch_size = 128
 
     train_num = train_gen.get_num_samples(batch_size, num_classes)
@@ -66,7 +66,8 @@ def train_generator():
     )
 
     model.evaluate(
-        test_gen.generate(batch_size, num_classes), steps=test_gen.get_num_samples() / batch_size,
+        test_gen.generate(batch_size, num_classes),
+        steps=test_gen.get_num_samples() / batch_size,
     )
 
     deep_learning_bot = DeepLearningAgent(model, encoder)

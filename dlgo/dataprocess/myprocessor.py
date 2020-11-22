@@ -1,37 +1,28 @@
-from __future__ import print_function
 from __future__ import absolute_import
+
 import os
-import glob
 import os.path
 import tarfile
 import gzip
+import glob
 import shutil
+
 import numpy as np
-import multiprocessing
-import sys
+import tensorflow as tf
 from keras.utils import to_categorical
 from dotenv import load_dotenv
-import tensorflow as tf
 
 from dlgo.gosgf import Sgf_game
 from dlgo.goboard_fast import Board, GameState, Move
 from dlgo.gotypes import Player, Point
+from dlgo.encoders.base import get_encoder_by_name
+from dlgo.dataprocess.generator import DataGenerator
 from dlgo.dataprocess.index_processor import KGSIndex
 from dlgo.dataprocess.sampling import Sampler
-from dlgo.dataprocess.generator import DataGenerator
-from dlgo.encoders.base import get_encoder_by_name
-
-
-def worker(jobinfo):
-    try:
-        clazz, encoder, zip_file, data_file_name, game_list = jobinfo
-        clazz(encoder=encoder).process_zip(zip_file, data_file_name, game_list)
-    except (KeyboardInterrupt, SystemExit):
-        raise Exception(">>> Exiting child process.")
 
 
 class GoDataProcessor:
-    def __init__(self, encoder="simple"):
+    def __init__(self, encoder="oneplane"):
         gpus = tf.config.experimental.list_physical_devices("GPU")
         if gpus:
             try:
@@ -61,9 +52,14 @@ class GoDataProcessor:
             features_and_labels = self.consolidate_games(data_type, data)
             return features_and_labels
 
-    # <1> Map workload to CPUs
-    # <2> Either return a Go dataprocess generator...
-    # <3> ... or return consolidated dataprocess as before.
+    # <1> As `data_type` you can choose either 'train' or 'test'.
+    # <2> `num_samples` refers to the number of games to load dataprocess from.
+    # <3> We download all games from KGS to our local dataprocess directory. If dataprocess is available, it won't be downloaded again.
+    # <4> The `Sampler` instance selects the specified number of games for a dataprocess type.
+    # <5> We collect all zip file names contained in the dataprocess in a list.
+    # <6> Then we group all SGF file indices by zip file name.
+    # <7> The zip files are then processed individually.
+    # <8> Features and labels from each zip are then aggregated and returned.
 
     def unzip_data(self, zip_file_name):
         this_gz = gzip.open(self.data_dir + "/" + zip_file_name)
@@ -74,6 +70,10 @@ class GoDataProcessor:
         shutil.copyfileobj(this_gz, this_tar)
         this_tar.close()
         return tar_file
+
+    # <1> Unpack the `gz` file into a `tar` file.
+    # <2> Remove ".gz" at the end to get the name of the tar file.
+    # <3> Copy the contents of the unpacked file into the `tar` file.
 
     def process_zip(self, zip_file_name, data_file_name, game_list):
         tar_file = self.unzip_data(zip_file_name)
@@ -113,6 +113,17 @@ class GoDataProcessor:
                     game_state = game_state.apply_move(move)
                     first_move_done = True
 
+        # <1> Determine the total number of moves in all games in this zip file.
+        # <2> Infer the shape of features and labels from the encoder we use.
+        # <3> Read the SGF content as string, after extracting the zip file.
+        # <4> Infer the initial game state by applying all handicap stones.
+        # <5> Iterate over all moves in the SGF file.
+        # <6> Read the coordinates of the stone to be played...
+        # <7> ... or pass, if there is none.
+        # <8> We encode the current game state as features...
+        # <9> ... and the next move as label for the features.
+        # <10> Afterwards the move is applied to the board and we proceed with the next one.
+
         feature_file_base = self.data_dir + "/" + data_file_name + "_features_%d"
         label_file_base = self.data_dir + "/" + data_file_name + "_labels_%d"
 
@@ -133,11 +144,15 @@ class GoDataProcessor:
             np.save(feature_file, features)
             np.save(label_file, labels)
 
-    def consolidate_games(self, name, samples):
+    # <1> We process features and labels in chunks of size 1024.
+    # <2> The current chunk is cut off from features and labels...
+    # <3> ...  and then stored in a separate file.
+
+    def consolidate_games(self, data_type, samples):
         files_needed = set(file_name for file_name, index in samples)
         file_names = []
         for zip_file_name in files_needed:
-            file_name = zip_file_name.replace(".tar.gz", "") + name
+            file_name = zip_file_name.replace(".tar.gz", "") + data_type
             file_names.append(file_name)
 
         feature_list = []
@@ -153,20 +168,15 @@ class GoDataProcessor:
                 y = to_categorical(y.astype(int), 19 * 19)
                 feature_list.append(x)
                 label_list.append(y)
-
         features = np.concatenate(feature_list, axis=0)
         labels = np.concatenate(label_list, axis=0)
-
-        feature_file = self.data_dir + "/" + name
-        label_file = self.data_dir + "/" + name
-
-        np.save(feature_file, features)
-        np.save(label_file, labels)
+        np.save("{}/features_{}.npy".format(self.data_dir, data_type), features)
+        np.save("{}/labels_{}.npy".format(self.data_dir, data_type), labels)
 
         return features, labels
 
     @staticmethod
-    def get_handicap(sgf):  # Get handicap stones
+    def get_handicap(sgf):
         go_board = Board(19, 19)
         first_move_done = False
         move = None
@@ -175,7 +185,7 @@ class GoDataProcessor:
             for setup in sgf.get_root().get_setup_stones():
                 for move in setup:
                     row, col = move
-                    go_board.place_stone(Player.black, Point(row + 1, col + 1))  # black gets handicap
+                    go_board.place_stone(Player.black, Point(row + 1, col + 1))
             first_move_done = True
             game_state = GameState(go_board, Player.white, None, move)
         return game_state, first_move_done
@@ -189,32 +199,11 @@ class GoDataProcessor:
                 indices_by_zip_name[filename] = []
             indices_by_zip_name[filename].append(index)
 
-        zips_to_process = []
         for zip_name in zip_names:
             base_name = zip_name.replace(".tar.gz", "")
             data_file_name = base_name + data_type
             if not os.path.isfile(self.data_dir + "/" + data_file_name):
-                zips_to_process.append(
-                    (
-                        self.__class__,
-                        self.encoder_string,
-                        zip_name,
-                        data_file_name,
-                        indices_by_zip_name[zip_name],
-                    )
-                )
-
-        cores = multiprocessing.cpu_count()
-        # Determine number of CPU cores and split work load among them
-        pool = multiprocessing.Pool(processes=cores)
-        p = pool.map_async(worker, zips_to_process)
-        try:
-            _ = p.get()
-        # Caught keyboard interrupt, terminating workers
-        except KeyboardInterrupt:
-            pool.terminate()
-            pool.join()
-            sys.exit(-1)
+                self.process_zip(zip_name, data_file_name, indices_by_zip_name[zip_name])
 
     def num_total_examples(self, zip_file, game_list, name_list):
         total_examples = 0

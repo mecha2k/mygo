@@ -1,14 +1,10 @@
 import os
 import h5py
-from keras.models import Sequential, load_model
-from keras.layers.core import Dense
-from keras.callbacks import ModelCheckpoint
 from dotenv import load_dotenv
 
-from dlgo.dataprocess.parallel_processor import GoDataProcessor
+from dlgo.dataprocess.myprocessor import GoDataProcessor
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
-from dlgo.neuralnet import large
 
 
 def train_generator():
@@ -30,7 +26,7 @@ def train_generator():
     agent_model = load_prediction_agent(model_file)
     agent_model.model.summary()
 
-    epochs = 10
+    epochs = 2
     batch_size = 128
 
     train_num = train_gen.get_num_samples(batch_size, num_classes)
@@ -45,7 +41,8 @@ def train_generator():
     )
 
     agent_model.model.evaluate(
-        test_gen.generate(batch_size, num_classes), steps=test_gen.get_num_samples() / batch_size,
+        test_gen.generate(batch_size, num_classes),
+        steps=test_gen.get_num_samples() / batch_size,
     )
 
     deep_learning_bot = DeepLearningAgent(agent_model.model, encoder)

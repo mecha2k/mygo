@@ -17,7 +17,10 @@ def get_web_app(bot_map):
     static_path = os.path.join(here, "static")
     template_path = os.path.join(here, "templates")
     app = Flask(
-        __name__, static_url_path="", static_folder=static_path, template_folder=template_path,
+        __name__,
+        static_url_path="",
+        static_folder=static_path,
+        template_folder=template_path,
     )
     app.config["TEMPLATES_AUTO_RELOAD"] = True
     app.config["SEND_FILE_MAX_AGE_DEFAULT"] = 0
@@ -43,9 +46,7 @@ def get_web_app(bot_map):
 
         agent = "predict bot (chap07)"
         scriptfile = "go-predict.js"
-        response = make_response(
-            render_template("play_go.html", agent=agent, scriptfile=scriptfile)
-        )
+        response = make_response(render_template("play_go.html", agent=agent, scriptfile=scriptfile))
 
         expires = datetime.datetime.now() + datetime.timedelta(days=365)
         response.set_cookie("mycookie", mycookie, expires=expires)

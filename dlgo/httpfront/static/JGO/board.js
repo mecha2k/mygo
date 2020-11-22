@@ -12,7 +12,7 @@ var util = require("./util")
  * @param {int} [height] The height of the board
  * @constructor
  */
-var Board = function (width, height) {
+var Board = function(width, height) {
   this.width = width
 
   if (height !== undefined) this.height = height
@@ -49,7 +49,7 @@ var Board = function (width, height) {
  *
  * @param {function} func A listener callback.
  */
-Board.prototype.addListener = function (func) {
+Board.prototype.addListener = function(func) {
   this.listeners.push(func)
 }
 
@@ -58,7 +58,7 @@ Board.prototype.addListener = function (func) {
  *
  * @param {function} func A listener callback.
  */
-Board.prototype.removeListener = function (func) {
+Board.prototype.removeListener = function(func) {
   var index = this.listeners.indexOf(func)
   if (index !== -1) this.listeners.splice(index, 1)
 }
@@ -68,7 +68,7 @@ Board.prototype.removeListener = function (func) {
  *
  * @param {string} s The coordinate string.
  */
-Board.prototype.getCoordinate = function (s) {
+Board.prototype.getCoordinate = function(s) {
   return new Coordinate(
     C.COORDINATES.indexOf(s.toUpperCase().substr(0, 1)),
     this.height - parseInt(s.substr(1))
@@ -81,7 +81,7 @@ Board.prototype.getCoordinate = function (s) {
  * @param {Coordinate} c Coordinate.
  * @returns {string} representation.
  */
-Board.prototype.toString = function (c) {
+Board.prototype.toString = function(c) {
   return C.COORDINATES[c.i] + (this.height - c.j)
 }
 
@@ -95,7 +95,7 @@ Board.prototype.toString = function (c) {
  * @param {int} [i2] Colunm end.
  * @param {int} [j2] Row end.
  */
-Board.prototype.each = function (func, i1, j1, i2, j2) {
+Board.prototype.each = function(func, i1, j1, i2, j2) {
   var c = new Coordinate()
 
   if (i1 === undefined) i1 = 0
@@ -110,9 +110,9 @@ Board.prototype.each = function (func, i1, j1, i2, j2) {
 /**
  * Clear board.
  */
-Board.prototype.clear = function () {
+Board.prototype.clear = function() {
   this.each(
-    function (c) {
+    function(c) {
       this.setType(c, C.CLEAR)
       this.setMark(c, C.MARK.NONE)
     }.bind(this)
@@ -125,7 +125,7 @@ Board.prototype.clear = function () {
  * @param {Object} c A Coordinate or Array of them.
  * @param {Object} t New type, e.g. CLEAR, BLACK, ...
  */
-Board.prototype.setType = function (c, t) {
+Board.prototype.setType = function(c, t) {
   if (c instanceof Coordinate) {
     var old = this.stones[c.i][c.j]
 
@@ -134,7 +134,7 @@ Board.prototype.setType = function (c, t) {
     this.stones[c.i][c.j] = t
 
     var ev = { type: "type", coordinate: c, board: this, oldVal: old, newVal: t }
-    this.listeners.forEach(function (l) {
+    this.listeners.forEach(function(l) {
       l(ev)
     })
   } else if (c instanceof Array) {
@@ -148,7 +148,7 @@ Board.prototype.setType = function (c, t) {
  * @param {Object} c A Coordinate or Array of them.
  * @param {Object} m New mark, e.g. MARK.NONE, MARK.TRIANGLE, ...
  */
-Board.prototype.setMark = function (c, m) {
+Board.prototype.setMark = function(c, m) {
   if (c instanceof Coordinate) {
     var old = this.marks[c.i][c.j]
 
@@ -157,7 +157,7 @@ Board.prototype.setMark = function (c, m) {
     this.marks[c.i][c.j] = m
 
     var ev = { type: "mark", coordinate: c, board: this, oldVal: old, newVal: m }
-    this.listeners.forEach(function (l) {
+    this.listeners.forEach(function(l) {
       l(ev)
     })
   } else if (c instanceof Array) {
@@ -171,7 +171,7 @@ Board.prototype.setMark = function (c, m) {
  * @param {Object} c A Coordinate or an Array of them.
  * @returns {Object} Type or array of types.
  */
-Board.prototype.getType = function (c) {
+Board.prototype.getType = function(c) {
   var ret
 
   if (c instanceof Coordinate) {
@@ -190,7 +190,7 @@ Board.prototype.getType = function (c) {
  * @param {Object} c A Coordinate or an Array of them.
  * @returns {Object} Mark or array of marks.
  */
-Board.prototype.getMark = function (c) {
+Board.prototype.getMark = function(c) {
   var ret
 
   if (c instanceof Coordinate) {
@@ -209,7 +209,7 @@ Board.prototype.getMark = function (c) {
  * @param {Coordinate} c The coordinate
  * @returns {Array} The array of adjacent coordinates (2-4)
  */
-Board.prototype.getAdjacent = function (c) {
+Board.prototype.getAdjacent = function(c) {
   var coordinates = [],
     i = c.i,
     j = c.j
@@ -229,7 +229,7 @@ Board.prototype.getAdjacent = function (c) {
  * @param {Object} t A type filter (return only matching type).
  * @returns {Object} Object with attributes 'type' and 'mark', array or false.
  */
-Board.prototype.filter = function (c, t) {
+Board.prototype.filter = function(c, t) {
   var ret = []
   for (var i = 0, len = c.length; i < len; ++i) if (this.stones[c[i].i][c[i].j] == t) ret.push(c[i])
   return ret
@@ -242,7 +242,7 @@ Board.prototype.filter = function (c, t) {
  * @param {Object} t A type filter (return only matching type).
  * @returns {bool} True or false.
  */
-Board.prototype.hasType = function (c, t) {
+Board.prototype.hasType = function(c, t) {
   for (var i = 0, len = c.length; i < len; ++i) if (this.stones[c[i].i][c[i].j] === t) return true
   return false
 }
@@ -254,7 +254,7 @@ Board.prototype.hasType = function (c, t) {
  * @param {int} [overrideType] Treat current coordinate as this type.
  * @returns {Object} Two arrays of coordinates in members 'group' and 'neighbors'.
  */
-Board.prototype.getGroup = function (coord, overrideType) {
+Board.prototype.getGroup = function(coord, overrideType) {
   var type = overrideType || this.getType(coord),
     seen = {},
     group = [coord.copy()],
@@ -285,7 +285,7 @@ Board.prototype.getGroup = function (coord, overrideType) {
  *
  * @returns {Object} Board contents.
  */
-Board.prototype.getRaw = function () {
+Board.prototype.getRaw = function() {
   return {
     width: this.width,
     height: this.height,
@@ -299,7 +299,7 @@ Board.prototype.getRaw = function () {
  *
  * @param {Object} raw Board contents.
  */
-Board.prototype.setRaw = function (raw) {
+Board.prototype.setRaw = function(raw) {
   this.width = raw.width
   this.height = raw.height
   this.stones = raw.stones
@@ -311,7 +311,7 @@ Board.prototype.setRaw = function (raw) {
  *
  * @returns {Object} Cloned board.
  */
-Board.prototype.clone = function () {
+Board.prototype.clone = function() {
   var board = new Board()
   board.setRaw(this.getRaw())
   return board
@@ -328,7 +328,7 @@ Board.prototype.clone = function () {
  * @param {Coordinate} [ko] Coordinate of previous ko.
  * @returns {Object} Move result data structure.
  */
-Board.prototype.playMove = function (coord, stone, ko) {
+Board.prototype.playMove = function(coord, stone, ko) {
   var oppType = stone == C.BLACK ? C.WHITE : C.BLACK,
     captures = [],
     adjacent,
