@@ -63,7 +63,11 @@ def simulate_game(black_player, white_player):
     game_result = scoring.compute_game_result(game)
     print(game_result)
 
-    return GameRecord(moves=moves, winner=game_result.winner, margin=game_result.winning_margin,)
+    return GameRecord(
+        moves=moves,
+        winner=game_result.winner,
+        margin=game_result.winning_margin,
+    )
 
 
 def main():
