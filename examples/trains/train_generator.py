@@ -1,11 +1,10 @@
-import os
 import h5py
-from keras.models import Sequential, load_model
+from keras.models import Sequential
 from keras.layers.core import Dense
 from keras.callbacks import ModelCheckpoint
-from dotenv import load_dotenv
+import os
 
-from dlgo.dataprocess.parallel_processor import GoDataProcessor
+from dlgo.dataprocess.myprocessor import GoDataProcessor
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
 from dlgo.neuralnet import large
@@ -22,13 +21,19 @@ def train_generator():
     train_gen = processor.load_go_data("train", num_games, use_generator=True)
     test_gen = processor.load_go_data("test", num_games, use_generator=True)
 
-    input_shape = (encoder.num_planes, go_board_rows, go_board_cols)
-    network_layers = large.layers(input_shape)
-    model = Sequential()
-    for layer in network_layers:
-        model.add(layer)
-    model.add(Dense(num_classes, activation="softmax"))
-    model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
+    procpath = processor.data_dir + "/checkpoints"
+    modelfile = procpath + "/my_deep_bot.h5"
+    if os.path.isfile(modelfile):
+        myagent = load_prediction_agent(h5py.File(modelfile, "r"))
+        model = myagent.model
+    else:
+        input_shape = (encoder.num_planes, go_board_rows, go_board_cols)
+        network_layers = large.layers(input_shape)
+        model = Sequential()
+        for layer in network_layers:
+            model.add(layer)
+        model.add(Dense(num_classes, activation="softmax"))
+        model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
     model.summary()
 
     epochs = 10
@@ -37,13 +42,9 @@ def train_generator():
     train_num = train_gen.get_num_samples(batch_size, num_classes)
     print(train_num)
 
-    load_dotenv(verbose=True)
-    AGENT_DIR = os.getenv("AGENT_DIR")
-
-    # model = load_model(AGENT_DIR + "/deep_bot_1.h5")
-    # model.summary()
-
-    filepath = AGENT_DIR + "/checkpoints/model_epoch_{epoch:02d}-{loss:.2f}.h5"
+    if not os.path.isdir(procpath):
+        os.makedirs(procpath)
+    filepath = procpath + "/model_epoch_{epoch:02d}-{loss:.2f}.h5"
     callbacks = [
         ModelCheckpoint(
             filepath=filepath,
@@ -70,7 +71,7 @@ def train_generator():
     )
 
     deep_learning_bot = DeepLearningAgent(model, encoder)
-    deep_learning_bot.serialize(h5py.File(AGENT_DIR + "/deep_bot_h5py.h5", "w"))
+    deep_learning_bot.serialize(h5py.File(modelfile, "w"))
 
 
 if __name__ == "__main__":
