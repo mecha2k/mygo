@@ -14,17 +14,17 @@ import os
 def main():
     rows, cols = 19, 19
     num_classes = rows * cols
-    num_games = 100
+    num_games = 10
 
     load_dotenv(verbose=True)
     AlphaGo_dir = os.getenv("ALPHAGO_DIR")
 
-    # encoder = AlphaGoEncoder()
-    encoder = SevenPlaneEncoder((rows, cols))
+    encoder = AlphaGoEncoder()
+    # encoder = SevenPlaneEncoder((rows, cols))
 
     processor = GoDataProcessor(encoder=encoder.name())
-    generator = processor.load_go_data("train", num_games, use_generator=True)
-    test_generator = processor.load_go_data("test", num_games, use_generator=True)
+    generator = processor.load_go_data("train", num_games, use_generator=False)
+    test_generator = processor.load_go_data("test", num_games, use_generator=False)
 
     input_shape = (encoder.num_planes, rows, cols)
     alphago_sl_policy = alphago_model(input_shape, is_policy_net=True)
