@@ -41,8 +41,7 @@ def train_generator():
     )
 
     agent_model.model.evaluate(
-        test_gen.generate(batch_size, num_classes),
-        steps=test_gen.get_num_samples() / batch_size,
+        test_gen.generate(batch_size, num_classes), steps=test_gen.get_num_samples() / batch_size,
     )
 
     deep_learning_bot = DeepLearningAgent(agent_model.model, encoder)

@@ -61,11 +61,7 @@ def simulate_game(black_player, white_player, board_size):
     game_result = scoring.compute_game_result(game)
     print(game_result)
 
-    return GameRecord(
-        moves=moves,
-        winner=game_result.winner,
-        margin=game_result.winning_margin,
-    )
+    return GameRecord(moves=moves, winner=game_result.winner, margin=game_result.winning_margin,)
 
 
 def play_games(args):
@@ -117,7 +113,8 @@ def main():
     gpu_frac = 0.95 / float(args.num_workers)
     pool = multiprocessing.Pool(args.num_workers)
     worker_args = [
-        (args.agent1, args.agent2, games_per_worker, args.board_size, gpu_frac) for _ in range(args.num_workers)
+        (args.agent1, args.agent2, games_per_worker, args.board_size, gpu_frac)
+        for _ in range(args.num_workers)
     ]
     game_results = pool.map(play_games, worker_args)
 

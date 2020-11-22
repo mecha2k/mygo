@@ -140,9 +140,6 @@ if __name__ == "__main__":
     AGENT_DIR = os.getenv("AGENT_DIR")
     bot = load_prediction_agent(h5py.File(AGENT_DIR + "/deep_bot_h5py.h5", "r"))
     gnu_go = LocalGtpBot(
-        go_bot=bot,
-        termination=PassWhenOpponentPasses(),
-        handicap=0,
-        opponent="gnugo",
+        go_bot=bot, termination=PassWhenOpponentPasses(), handicap=0, opponent="gnugo",
     )
     gnu_go.run()

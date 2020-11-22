@@ -69,11 +69,7 @@ def simulate_game(black_player, white_player, board_size):
     game_result = scoring.compute_game_result(game)
     print(game_result)
 
-    return GameRecord(
-        moves=moves,
-        winner=game_result.winner,
-        margin=game_result.winning_margin,
-    )
+    return GameRecord(moves=moves, winner=game_result.winner, margin=game_result.winning_margin,)
 
 
 def get_temp_file():
@@ -129,7 +125,9 @@ def do_self_play(
         experience.serialize(experience_outf)
 
 
-def generate_experience(learning_agent, reference_agent, exp_file, num_games, board_size, num_workers, temperature):
+def generate_experience(
+    learning_agent, reference_agent, exp_file, num_games, board_size, num_workers, temperature
+):
     experience_files = []
     workers = []
     gpu_frac = 0.95 / float(num_workers)
@@ -236,13 +234,7 @@ def evaluate(learning_agent, reference_agent, num_games, num_workers, board_size
     gpu_frac = 0.95 / float(num_workers)
     pool = multiprocessing.Pool(num_workers)
     worker_args = [
-        (
-            learning_agent,
-            reference_agent,
-            games_per_worker,
-            board_size,
-            gpu_frac,
-        )
+        (learning_agent, reference_agent, games_per_worker, board_size, gpu_frac,)
         for _ in range(num_workers)
     ]
     game_results = pool.map(play_games, worker_args)
@@ -301,7 +293,9 @@ def main():
             num_workers=args.num_workers,
             temperature=args.temperature,
         )
-        train_on_experience(learning_agent, tmp_agent, experience_file, lr=args.lr, batch_size=args.bs)
+        train_on_experience(
+            learning_agent, tmp_agent, experience_file, lr=args.lr, batch_size=args.bs
+        )
         total_games += args.games_per_batch
         wins = evaluate(
             learning_agent,

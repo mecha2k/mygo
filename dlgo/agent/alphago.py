@@ -38,7 +38,9 @@ class AlphaGoNode:
 
         if self.parent is not None:
             c_u = 5
-            self.u_value = c_u * np.sqrt(self.parent.visit_count) * self.prior_value / (1 + self.visit_count)
+            self.u_value = (
+                c_u * np.sqrt(self.parent.visit_count) * self.prior_value / (1 + self.visit_count)
+            )
 
 
 # <1> We update parents first to ensure we traverse the tree top to bottom.
@@ -98,7 +100,9 @@ class AlphaGoMCTS(Agent):
         # <7> Determine the combined value function.
         # <8> Update values for this node in the backup phase
 
-        move = max(self.root.children, key=lambda move: self.root.children.get(move).visit_count)  # <1>
+        move = max(
+            self.root.children, key=lambda move: self.root.children.get(move).visit_count
+        )  # <1>
 
         self.root = AlphaGoNode()
         if move in self.root.children:

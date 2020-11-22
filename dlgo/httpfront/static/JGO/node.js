@@ -11,7 +11,7 @@ var C = require("./constants")
  * @param {Object} info Node information - ko coordinate, comment, etc.
  * @constructor
  */
-var Node = function(jboard, parent, info) {
+var Node = function (jboard, parent, info) {
   this.jboard = jboard
   this.parent = parent
   this.info = info ? util.extend({}, info) : {}
@@ -30,7 +30,7 @@ var Node = function(jboard, parent, info) {
  * Helper method to clear parent node's markers. Created to achieve SGF like
  * stateless marker behavaior.
  */
-Node.prototype.clearParentMarks = function() {
+Node.prototype.clearParentMarks = function () {
   if (!this.parent) return
 
   for (var i = this.parent.changes.length - 1; i >= 0; i--) {
@@ -46,7 +46,7 @@ Node.prototype.clearParentMarks = function() {
  * @param {Object} c Coordinate or array of them.
  * @param {int} val Type.
  */
-Node.prototype.setType = function(c, val) {
+Node.prototype.setType = function (c, val) {
   if (c instanceof Array) {
     for (var i = 0, len = c.length; i < len; ++i) this.setType(c[i], val) // avoid repeating ourselves
     return
@@ -63,7 +63,7 @@ Node.prototype.setType = function(c, val) {
  * @param {Object} c Coordinate or array of them.
  * @param {int} val Mark.
  */
-Node.prototype.setMark = function(c, val) {
+Node.prototype.setMark = function (c, val) {
   if (c instanceof Array) {
     for (var i = 0, len = c.length; i < len; ++i) this.setMark(c[i], val) // avoid repeating ourselves
     return
@@ -77,7 +77,7 @@ Node.prototype.setMark = function(c, val) {
 /**
  * Apply changes of this node to board.
  */
-Node.prototype.apply = function() {
+Node.prototype.apply = function () {
   for (var i = 0; i < this.changes.length; i++) {
     var item = this.changes[i]
 
@@ -89,7 +89,7 @@ Node.prototype.apply = function() {
 /**
  * Revert changes of this node to board.
  */
-Node.prototype.revert = function() {
+Node.prototype.revert = function () {
   for (var i = this.changes.length - 1; i >= 0; i--) {
     var item = this.changes[i]
 

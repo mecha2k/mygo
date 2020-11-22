@@ -21,7 +21,10 @@ def index(args):
 
 def show(args):
     corpus_index = load_index(open(args.file))
-    print("Index contains %d chunks in %d physical files" % (corpus_index.num_chunks, len(corpus_index.physical_files)))
+    print(
+        "Index contains %d chunks in %d physical files"
+        % (corpus_index.num_chunks, len(corpus_index.physical_files))
+    )
 
 
 def _load_module_from_filename(filename):
@@ -79,7 +82,9 @@ def _prepare_training_data_single_process(worker_idx, chunk, corpus_index, outpu
             return
 
         # TODO: old interface
-        feature, label = processor.feature_and_label(next_color, next_move, board, processor.num_planes)
+        feature, label = processor.feature_and_label(
+            next_color, next_move, board, processor.num_planes
+        )
         xs.append(feature)
         ys.append(label)
     X = np.array(xs)
@@ -142,7 +147,10 @@ def prepare_training_data(num_workers, next_chunk, corpus_index, output_q, stop_
 
 def train(args):
     corpus_index = load_index(open(args.index))
-    print("Index contains %d chunks in %d physical files" % (corpus_index.num_chunks, len(corpus_index.physical_files)))
+    print(
+        "Index contains %d chunks in %d physical files"
+        % (corpus_index.num_chunks, len(corpus_index.physical_files))
+    )
     if not os.path.exists(args.progress):
         print("%s does not exist. Run train.py init first." % (args.progress,))
     else:
@@ -197,7 +205,9 @@ def main():
     index_parser = subparsers.add_parser("index", help="Build an index for a corpus.")
     index_parser.set_defaults(command="index")
     index_parser.add_argument("--output", "-o", required=True, help="Path to store the index.")
-    index_parser.add_argument("--dataprocess", "-d", required=True, help="Directory or archive containing SGF files.")
+    index_parser.add_argument(
+        "--dataprocess", "-d", required=True, help="Directory or archive containing SGF files."
+    )
     index_parser.add_argument(
         "--chunk-size", "-c", type=int, default=20000, help="Number of examples per training chunk."
     )

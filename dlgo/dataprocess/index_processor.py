@@ -28,10 +28,7 @@ def worker(url_and_target):  # Parallelize dataprocess download via multiprocess
 
 class KGSIndex:
     def __init__(
-        self,
-        kgs_url="http://u-go.net/gamerecords/",
-        index_page=None,
-        data_directory=None,
+        self, kgs_url="http://u-go.net/gamerecords/", index_page=None, data_directory=None,
     ):
         """Create an index of zip files containing SGF dataprocess of actual Go Games on KGS.
 
@@ -98,7 +95,9 @@ class KGSIndex:
     def load_index(self):
         """Create the actual index representation from the previously downloaded or cached html."""
         index_contents = self.create_index_page()
-        split_page = [item for item in index_contents.split('<a href="') if item.startswith("https://")]
+        split_page = [
+            item for item in index_contents.split('<a href="') if item.startswith("https://")
+        ]
         for item in split_page:
             download_url = item.split('">Download')[0]
             if download_url.endswith(".tar.gz"):

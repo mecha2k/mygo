@@ -28,7 +28,9 @@ import six
 
 
 _propident_re = re.compile(r"\A[A-Z]{1,8}\Z".encode("ascii"))
-_propvalue_re = re.compile(r"\A [^\\\]]* (?: \\. [^\\\]]* )* \Z".encode("ascii"), re.VERBOSE | re.DOTALL)
+_propvalue_re = re.compile(
+    r"\A [^\\\]]* (?: \\. [^\\\]]* )* \Z".encode("ascii"), re.VERBOSE | re.DOTALL
+)
 _find_start_re = re.compile(r"\(\s*;".encode("ascii"))
 _tokenise_re = re.compile(
     r"""
@@ -318,8 +320,7 @@ def serialise_game_tree(game_tree, wrap=79):
             # Force FF to the front, largely to work around a Quarry bug which
             # makes it ignore the first few bytes of the file.
             for prop_ident, prop_values in sorted(
-                list(properties.items()),
-                key=lambda pair: (-(pair[0] == b"FF"), pair[0]),
+                list(properties.items()), key=lambda pair: (-(pair[0] == b"FF"), pair[0]),
             ):
                 # Make a single string for each property, to get prettier
                 # block_format output.

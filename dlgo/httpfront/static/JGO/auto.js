@@ -113,7 +113,7 @@ function process(JGO, div) {
 /**
  * Find all div elements with class 'jgoboard' and initialize them.
  */
-exports.init = function(document, JGO) {
+exports.init = function (document, JGO) {
   var matches = document.querySelectorAll("div.jgoboard")
 
   for (var i = 0, len = matches.length; i < len; ++i) process(JGO, matches[i])
