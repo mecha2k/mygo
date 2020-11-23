@@ -19,16 +19,17 @@ from dlgo.encoders.base import get_encoder_by_name
 from dlgo.dataprocess.generator import DataGenerator
 from dlgo.dataprocess.index_processor import KGSIndex
 from dlgo.dataprocess.sampling import Sampler
+from dlgo.utils import print_board
 
 
 class GoDataProcessor:
     def __init__(self, encoder="oneplane"):
-        gpus = tf.config.experimental.list_physical_devices("GPU")
-        if gpus:
-            try:
-                tf.config.experimental.set_memory_growth(gpus[0], True)
-            except RuntimeError as e:
-                print(e)
+        # gpus = tf.config.experimental.list_physical_devices("GPU")
+        # if gpus:
+        #     try:
+        #         tf.config.experimental.set_memory_growth(gpus[0], True)
+        #     except RuntimeError as e:
+        #         print(e)
 
         load_dotenv(verbose=True)
         DATA_DIR = os.getenv("DATA_DIR")
@@ -100,6 +101,7 @@ class GoDataProcessor:
             sgf = Sgf_game.from_string(sgf_content)
 
             game_state, first_move_done = self.get_handicap(sgf)
+            # print_board(game_state.board)
 
             for item in sgf.main_sequence_iter():
                 color, move_tuple = item.get_move()
@@ -192,7 +194,7 @@ class GoDataProcessor:
                     row, col = move
                     go_board.place_stone(Player.black, Point(row + 1, col + 1))
             first_move_done = True
-            game_state = GameState(go_board, Player.white, None, move)
+            game_state = GameState(go_board, Player.white, None, Move(point=move))
         return game_state, first_move_done
 
     def map_to_workers(self, data_type, samples):

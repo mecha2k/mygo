@@ -32,12 +32,12 @@ def worker(jobinfo):
 
 class GoDataProcessor:
     def __init__(self, encoder="simple"):
-        gpus = tf.config.experimental.list_physical_devices("GPU")
-        if gpus:
-            try:
-                tf.config.experimental.set_memory_growth(gpus[0], True)
-            except RuntimeError as e:
-                print(e)
+        # gpus = tf.config.experimental.list_physical_devices("GPU")
+        # if gpus:
+        #     try:
+        #         tf.config.experimental.set_memory_growth(gpus[0], True)
+        #     except RuntimeError as e:
+        #         print(e)
 
         load_dotenv(verbose=True)
         DATA_DIR = os.getenv("DATA_DIR")

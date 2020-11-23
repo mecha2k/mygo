@@ -9,7 +9,8 @@ from dlgo.utils import print_board, print_move
 
 def generate_game(board_size, rounds, max_moves, temperature):
     boards, moves = [], []
-    encoder = get_encoder_by_name("oneplane", board_size)
+    # encoder = get_encoder_by_name("simple", board_size)
+    encoder = get_encoder_by_name("alphago", (board_size, board_size))
     game = goboard.GameState.new_game(board_size)
     bot = mcts.MCTSAgent(rounds, temperature)
 
@@ -18,7 +19,8 @@ def generate_game(board_size, rounds, max_moves, temperature):
         print_board(game.board)
         move = bot.select_move(game)
         if move.is_play:
-            boards.append(encoder.encode(game))
+            board_matrix = encoder.encode(game)
+            boards.append(board_matrix)
             move_one_hot = np.zeros(encoder.num_points())
             move_one_hot[encoder.encode_point(move.point)] = 1
             moves.append(move_one_hot)
@@ -45,10 +47,10 @@ def generate_game(board_size, rounds, max_moves, temperature):
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--board-size", "-b", type=int, default=9)
+    parser.add_argument("--board-size", "-b", type=int, default=6)
     parser.add_argument("--rounds", "-r", type=int, default=100)
     parser.add_argument("--temperature", "-t", type=float, default=0.8)
-    parser.add_argument("--max-moves", "-m", type=int, default=60, help="Max moves per game.")
+    parser.add_argument("--max-moves", "-m", type=int, default=24, help="Max moves per game.")
     parser.add_argument("--num-games", "-n", type=int, default=2)
     parser.add_argument("--board-out", default="features.npy")
     parser.add_argument("--move-out", default="labels.npy")

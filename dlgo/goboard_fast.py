@@ -342,9 +342,13 @@ class GameState:
             return False
         if self.last_move.is_resign:
             return True
-        second_last_move = self.previous_state.last_move
-        if second_last_move is None:
+        if self.previous_state is None:
             return False
+        if self.previous_state.last_move is None:
+            return False
+        else:
+            second_last_move = self.previous_state.last_move
+
         return self.last_move.is_pass and second_last_move.is_pass
 
     def legal_moves(self):

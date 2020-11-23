@@ -9,12 +9,15 @@ from multiprocessing import freeze_support
 from dotenv import load_dotenv
 import h5py
 import os
+import time
 
 
 def main():
     rows, cols = 19, 19
     num_classes = rows * cols
     num_games = 1
+
+    start_time = time.time()
 
     load_dotenv(verbose=True)
     AlphaGo_dir = os.getenv("ALPHAGO_DIR")
@@ -30,7 +33,7 @@ def main():
 
     alphago_sl_policy.compile("sgd", "categorical_crossentropy", metrics=["accuracy"])
 
-    epochs = 10
+    epochs = 5
     batch_size = 128
     filepath = AlphaGo_dir + "/alphago_sl_policy_{epoch}.h5"
 
@@ -46,24 +49,29 @@ def main():
         )
     ]
 
-    alphago_sl_policy.fit_generator(
-        generator=generator.generate(batch_size, num_classes),
+    num_gene_samples = generator.get_num_samples()
+    num_test_samples = test_generator.get_num_samples()
+    print("train samples: ", num_gene_samples)
+    print("test samples: ", num_test_samples)
+
+    alphago_sl_policy.fit(
+        generator.generate(batch_size, num_classes),
         epochs=epochs,
-        steps_per_epoch=generator.get_num_samples() / batch_size,
+        steps_per_epoch=num_gene_samples / batch_size,
         validation_data=test_generator.generate(batch_size, num_classes),
-        validation_steps=test_generator.get_num_samples() / batch_size,
+        validation_steps=num_test_samples / batch_size,
         callbacks=callbacks,
     )
 
-    alphago_sl_agent = DeepLearningAgent(alphago_sl_policy, encoder)
+    alphago_sl_policy.evaluate(
+        test_generator.generate(batch_size, num_classes), steps=num_test_samples / batch_size,
+    )
 
-    with h5py.File(AlphaGo_dir + "/alphago_sl_policy.h5", "w") as sl_agent_out:
+    alphago_sl_agent = DeepLearningAgent(alphago_sl_policy, encoder)
+    with h5py.File(AlphaGo_dir + "/my_alphago_sl_policy.h5", "w") as sl_agent_out:
         alphago_sl_agent.serialize(sl_agent_out)
 
-    alphago_sl_policy.evaluate_generator(
-        generator=test_generator.generate(batch_size, num_classes),
-        steps=test_generator.get_num_samples() / batch_size,
-    )
+    print(f"elapsed time ({encoder.name()}): {time.time() - start_time} sec.")
 
 
 if __name__ == "__main__":

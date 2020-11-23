@@ -69,9 +69,9 @@ class AlphaGoEncoder(Encoder):
                 if not is_point_an_eye(game_state.board, point, game_state.next_player):
                     board_tensor[offset("sensibleness")][r][c] = 1
 
-                ages = min(game_state.board.move_ages.get(r, c), 8)
+                ages = int(min(game_state.board.move_ages.get(r, c), 8))
                 if ages > 0:
-                    print(ages)
+                    print("ages", ages)
                     board_tensor[offset("turns_since") + ages][r][c] = 1
 
                 if game_state.board.get_go_string(point):
