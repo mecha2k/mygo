@@ -32,12 +32,12 @@ def worker(jobinfo):
 
 class GoDataProcessor:
     def __init__(self, encoder="simple"):
-        # gpus = tf.config.experimental.list_physical_devices("GPU")
-        # if gpus:
-        #     try:
-        #         tf.config.experimental.set_memory_growth(gpus[0], True)
-        #     except RuntimeError as e:
-        #         print(e)
+        gpus = tf.config.experimental.list_physical_devices("GPU")
+        if gpus:
+            try:
+                tf.config.experimental.set_memory_growth(gpus[0], True)
+            except RuntimeError as e:
+                print(e)
 
         load_dotenv(verbose=True)
         DATA_DIR = os.getenv("DATA_DIR")
@@ -183,6 +183,7 @@ class GoDataProcessor:
                     go_board.place_stone(
                         Player.black, Point(row + 1, col + 1)
                     )  # black gets handicap
+                    move = Move(point=move)
             first_move_done = True
             game_state = GameState(go_board, Player.white, None, move)
         return game_state, first_move_done
@@ -214,6 +215,8 @@ class GoDataProcessor:
         cores = multiprocessing.cpu_count()
         # Determine number of CPU cores and split work load among them
         pool = multiprocessing.Pool(processes=cores)
+        # pool.map(worker, zips_to_process)
+
         p = pool.map_async(worker, zips_to_process)
         try:
             _ = p.get()

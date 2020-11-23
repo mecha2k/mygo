@@ -1,7 +1,6 @@
-from dlgo.dataprocess.myprocessor import GoDataProcessor
-
+from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.alphago import AlphaGoEncoder
-from dlgo.agent.predict import DeepLearningAgent
+from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
 from dlgo.neuralnet.alphago import alphago_model
 
 from keras.callbacks import ModelCheckpoint
@@ -15,7 +14,7 @@ import time
 def main():
     rows, cols = 19, 19
     num_classes = rows * cols
-    num_games = 1
+    num_games = 5000
 
     start_time = time.time()
 
@@ -27,8 +26,13 @@ def main():
     generator = processor.load_go_data("train", num_games, use_generator=True)
     test_generator = processor.load_go_data("test", num_games, use_generator=True)
 
-    input_shape = (encoder.num_planes, rows, cols)
-    alphago_sl_policy = alphago_model(input_shape, is_policy_net=True)
+    modelfile = AlphaGo_dir + "/my_alphago_sl_policy.h5"
+    if os.path.isfile(modelfile):
+        myagent = load_prediction_agent(h5py.File(modelfile, "r"))
+        alphago_sl_policy = myagent.model
+    else:
+        input_shape = (encoder.num_planes, rows, cols)
+        alphago_sl_policy = alphago_model(input_shape, is_policy_net=True)
     alphago_sl_policy.summary()
 
     alphago_sl_policy.compile("sgd", "categorical_crossentropy", metrics=["accuracy"])
@@ -68,9 +72,10 @@ def main():
     )
 
     alphago_sl_agent = DeepLearningAgent(alphago_sl_policy, encoder)
-    with h5py.File(AlphaGo_dir + "/my_alphago_sl_policy.h5", "w") as sl_agent_out:
+    with h5py.File(modelfile, "w") as sl_agent_out:
         alphago_sl_agent.serialize(sl_agent_out)
 
+    print(f"model file saved: {modelfile}")
     print(f"elapsed time ({encoder.name()}): {time.time() - start_time} sec.")
 
 

@@ -49,6 +49,7 @@ class KGSIndex:
 
     def download_files(self):
         """Download zip files by distributing work on all available CPUs"""
+
         if not os.path.isdir(self.data_directory):
             os.makedirs(self.data_directory)
 
@@ -58,6 +59,10 @@ class KGSIndex:
             file_name = file_info["filename"]
             if not os.path.isfile(self.data_directory + "/" + file_name):
                 urls_to_download.append((url, self.data_directory + "/" + file_name))
+
+        if len(urls_to_download) == 0:
+            return
+
         cores = multiprocessing.cpu_count()
         pool = multiprocessing.Pool(processes=cores)
         try:

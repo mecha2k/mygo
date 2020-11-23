@@ -24,12 +24,12 @@ from dlgo.utils import print_board
 
 class GoDataProcessor:
     def __init__(self, encoder="oneplane"):
-        # gpus = tf.config.experimental.list_physical_devices("GPU")
-        # if gpus:
-        #     try:
-        #         tf.config.experimental.set_memory_growth(gpus[0], True)
-        #     except RuntimeError as e:
-        #         print(e)
+        gpus = tf.config.experimental.list_physical_devices("GPU")
+        if gpus:
+            try:
+                tf.config.experimental.set_memory_growth(gpus[0], True)
+            except RuntimeError as e:
+                print(e)
 
         load_dotenv(verbose=True)
         DATA_DIR = os.getenv("DATA_DIR")
@@ -193,8 +193,9 @@ class GoDataProcessor:
                 for move in setup:
                     row, col = move
                     go_board.place_stone(Player.black, Point(row + 1, col + 1))
+                    move = Move(point=move)
             first_move_done = True
-            game_state = GameState(go_board, Player.white, None, Move(point=move))
+            game_state = GameState(go_board, Player.white, None, move)
         return game_state, first_move_done
 
     def map_to_workers(self, data_type, samples):

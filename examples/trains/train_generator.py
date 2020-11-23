@@ -2,10 +2,11 @@ import h5py
 from keras.models import Sequential
 from keras.layers.core import Dense
 from keras.callbacks import ModelCheckpoint
+from multiprocessing import freeze_support
 import os
 import time
 
-from dlgo.dataprocess.myprocessor import GoDataProcessor
+from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.simple import SimpleEncoder
 from dlgo.encoders.alphago import AlphaGoEncoder
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
@@ -16,12 +17,11 @@ from dlgo.neuralnet import large
 def train_generator():
     go_board_rows, go_board_cols = 19, 19
     num_classes = go_board_rows * go_board_cols
-    num_games = 10
+    num_games = 1000
 
     start_time = time.time()
 
     encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
-    # encoder = SimpleEncoder((go_board_rows, go_board_cols))
     encoder = AlphaGoEncoder()
     processor = GoDataProcessor(encoder=encoder.name())
 
@@ -43,7 +43,7 @@ def train_generator():
         model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
     model.summary()
 
-    epochs = 10
+    epochs = 5
     batch_size = 128
 
     train_num = train_gen.get_num_samples(batch_size, num_classes)
@@ -80,6 +80,7 @@ def train_generator():
     deep_learning_bot = DeepLearningAgent(model, encoder)
     deep_learning_bot.serialize(h5py.File(modelfile, "w"))
 
+    print(f"model file saved: {modelfile}")
     print(f"elapsed time ({encoder.name()}): {time.time() - start_time} sec.")
 
 
