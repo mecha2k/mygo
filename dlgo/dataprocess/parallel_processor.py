@@ -20,6 +20,7 @@ from dlgo.dataprocess.index_processor import KGSIndex
 from dlgo.dataprocess.sampling import Sampler
 from dlgo.dataprocess.generator import DataGenerator
 from dlgo.encoders.base import get_encoder_by_name
+from dlgo.kerasutil import init_gpus
 
 
 def worker(jobinfo):
@@ -32,18 +33,12 @@ def worker(jobinfo):
 
 class GoDataProcessor:
     def __init__(self, encoder="simple"):
-        gpus = tf.config.experimental.list_physical_devices("GPU")
-        if gpus:
-            try:
-                tf.config.experimental.set_memory_growth(gpus[0], True)
-            except RuntimeError as e:
-                print(e)
-
         load_dotenv(verbose=True)
         DATA_DIR = os.getenv("DATA_DIR")
         encoder_dir = DATA_DIR + "/" + encoder
         if not os.path.isdir(encoder_dir):
             os.makedirs(encoder_dir)
+        init_gpus()
 
         self.encoder_string = encoder
         self.encoder = get_encoder_by_name(encoder, 19)

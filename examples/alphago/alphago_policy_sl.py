@@ -4,7 +4,6 @@ from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
 from dlgo.neuralnet.alphago import alphago_model
 
 from keras.callbacks import ModelCheckpoint
-from multiprocessing import freeze_support
 from dotenv import load_dotenv
 import h5py
 import os
@@ -80,5 +79,4 @@ def main():
 
 
 if __name__ == "__main__":
-    freeze_support()
     main()

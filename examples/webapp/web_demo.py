@@ -1,23 +1,16 @@
 import argparse
 import h5py
 import os
-import tensorflow as tf
 from dotenv import load_dotenv
 
 from dlgo import agent
 from dlgo import httpfront
 from dlgo import mcts
 from dlgo import reinforce
+from dlgo.kerasutil import init_gpus
 
 
 def main():
-    gpus = tf.config.experimental.list_physical_devices("GPU")
-    if gpus:
-        try:
-            tf.config.experimental.set_memory_growth(gpus[0], True)
-        except RuntimeError as e:
-            print(e)
-
     parser = argparse.ArgumentParser()
     parser.add_argument("--bind-address", default="127.0.0.1")
     parser.add_argument("--port", "-p", type=int, default=5000)
@@ -54,4 +47,5 @@ def main():
 
 
 if __name__ == "__main__":
+    init_gpus()
     main()
