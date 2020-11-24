@@ -2,6 +2,7 @@ from dlgo.dataprocess.parallel_processor import GoDataProcessor
 from dlgo.encoders.alphago import AlphaGoEncoder
 from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
 from dlgo.neuralnet.alphago import alphago_model
+from dlgo.kerasutil import init_gpus
 
 from keras.callbacks import ModelCheckpoint
 from dotenv import load_dotenv
@@ -13,7 +14,7 @@ import time
 def main():
     rows, cols = 19, 19
     num_classes = rows * cols
-    num_games = 200
+    num_games = 10
 
     start_time = time.time()
 
@@ -79,4 +80,5 @@ def main():
 
 
 if __name__ == "__main__":
+    init_gpus()
     main()

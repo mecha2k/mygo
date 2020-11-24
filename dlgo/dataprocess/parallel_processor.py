@@ -20,7 +20,6 @@ from dlgo.dataprocess.index_processor import KGSIndex
 from dlgo.dataprocess.sampling import Sampler
 from dlgo.dataprocess.generator import DataGenerator
 from dlgo.encoders.base import get_encoder_by_name
-from dlgo.kerasutil import init_gpus
 
 
 def worker(jobinfo):
@@ -38,7 +37,6 @@ class GoDataProcessor:
         encoder_dir = DATA_DIR + "/" + encoder
         if not os.path.isdir(encoder_dir):
             os.makedirs(encoder_dir)
-        init_gpus()
 
         self.encoder_string = encoder
         self.encoder = get_encoder_by_name(encoder, 19)
