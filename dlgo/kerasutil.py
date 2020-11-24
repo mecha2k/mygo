@@ -4,7 +4,20 @@ import os
 
 import h5py
 import keras
+import tensorflow as tf
 from keras.models import load_model, save_model
+
+
+def init_gpus():
+    physical_gpus = tf.config.experimental.list_physical_devices("GPU")
+    if physical_gpus:
+        try:
+            for gpu in physical_gpus:
+                tf.config.experimental.set_memory_growth(gpu, True)
+            logical_gpus = tf.config.experimental.list_logical_devices("GPU")
+            print(len(physical_gpus), "Physical GPUs, ", len(logical_gpus))
+        except RuntimeError as e:
+            print(e)
 
 
 def save_model_to_hdf5_group(model, f):

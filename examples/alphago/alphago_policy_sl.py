@@ -14,7 +14,7 @@ import time
 def main():
     rows, cols = 19, 19
     num_classes = rows * cols
-    num_games = 5000
+    num_games = 200
 
     start_time = time.time()
 
@@ -37,7 +37,7 @@ def main():
 
     alphago_sl_policy.compile("sgd", "categorical_crossentropy", metrics=["accuracy"])
 
-    epochs = 5
+    epochs = 10
     batch_size = 128
     filepath = AlphaGo_dir + "/alphago_sl_policy_{epoch}.h5"
 
