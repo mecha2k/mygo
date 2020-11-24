@@ -1,10 +1,9 @@
-from keras.layers import Activation, BatchNormalization
 from keras.layers import Conv2D, Dense, Flatten, Input
 from keras.models import Model
 
 from dlgo import scoring
 from dlgo import zero
-from dlgo.goboard import GameState, Player, Point
+from dlgo.goboard import GameState, Player
 
 
 def simulate_game(board_size, black_agent, black_collector, white_agent, white_collector):

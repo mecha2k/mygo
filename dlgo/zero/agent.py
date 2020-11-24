@@ -1,7 +1,7 @@
 import numpy as np
 from keras.optimizers import SGD
 
-from ..agent import Agent
+from dlgo.agent import Agent
 
 __all__ = ["ZeroAgent"]
 

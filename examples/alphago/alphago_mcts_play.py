@@ -1,5 +1,6 @@
 from dlgo.agent import load_prediction_agent, load_policy_agent, AlphaGoMCTS
 from dlgo.reinforce import load_value_agent
+from dlgo.httpfront import get_web_app
 from dlgo.kerasutil import init_gpus
 
 from dotenv import load_dotenv
@@ -15,9 +16,12 @@ def alphago_mcts():
     strong_policy = load_policy_agent(h5py.File(AlphaGo_dir + "/my_alphago_rl_policy.h5", "r"))
     value = load_value_agent(h5py.File(AlphaGo_dir + "/my_alphago_value.h5", "r"))
 
-    alphago = AlphaGoMCTS(strong_policy, fast_policy, value)
+    return AlphaGoMCTS(strong_policy, fast_policy, value)
 
 
 if __name__ == "__main__":
     init_gpus()
-    alphago_mcts()
+
+    alphago = alphago_mcts()
+    web_app = get_web_app({"predict": alphago})
+    web_app.run()

@@ -15,7 +15,8 @@ class Move(enum.Enum):
 class ReferenceAgent(object):
     """Agent that never learns."""
 
-    def select_move(self):
+    @staticmethod
+    def select_move():
         return random.choice([Move.PASS, Move.FORFEIT])
 
 

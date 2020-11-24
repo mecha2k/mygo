@@ -41,7 +41,7 @@ def get_web_app(bot_map):
             agent = "random bot (chap03)"
             scriptfile = "go-random.js"
 
-        agent = "predict bot (chap07)"
+        agent = "AlphaGo bot (chap13)"
         scriptfile = "go-predict.js"
         response = make_response(
             render_template("play_go.html", agent=agent, scriptfile=scriptfile)

@@ -23,7 +23,7 @@ def main():
     alphago_rl_agent = PolicyAgent(sl_agent.model, encoder)
     opponent = PolicyAgent(sl_opponent.model, encoder)
 
-    num_games = 10
+    num_games = 100
     experience = experience_simulation(num_games, alphago_rl_agent, opponent)
 
     alphago_rl_agent.train(experience)

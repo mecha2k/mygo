@@ -14,7 +14,7 @@ import time
 def main():
     rows, cols = 19, 19
     num_classes = rows * cols
-    num_games = 10
+    num_games = 100
 
     start_time = time.time()
 

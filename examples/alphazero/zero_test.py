@@ -1,10 +1,7 @@
-import argparse
-import h5py
-
 from keras.layers import Activation, BatchNormalization, Conv2D, Dense, Flatten, Input
 from keras.models import Model
 from dlgo import zero
-from dlgo.goboard_fast import GameState, Player, Point
+from dlgo.goboard_fast import GameState
 
 
 def main():
