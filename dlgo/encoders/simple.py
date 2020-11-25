@@ -7,17 +7,13 @@ from dlgo.gotypes import Player, Point
 
 class SimpleEncoder(Encoder):
     def __init__(self, board_size):
-        """
-        Args:
-            board_size: tuple of (width, height)
-        """
         self.board_width, self.board_height = board_size
+        self.num_planes = 11
         # 0 - 3. black stones with 1, 2, 3, 4+ liberties
         # 4 - 7. white stones with 1, 2, 3, 4+ liberties
         # 8. black plays next
         # 9. white plays next
         # 10. move would be illegal due to ko
-        self.num_planes = 11
 
     def name(self):
         return "simple"
@@ -45,12 +41,9 @@ class SimpleEncoder(Encoder):
         return board_tensor
 
     def encode_point(self, point):
-        """Turn a board point into an integer index."""
-        # Points are 1-indexed
         return self.board_width * (point.row - 1) + (point.col - 1)
 
     def decode_point_index(self, index):
-        """Turn an integer index into a board point."""
         row = index // self.board_width
         col = index % self.board_width
         return Point(row=row + 1, col=col + 1)

@@ -63,9 +63,7 @@ class ZeroAgent(Agent):
         super().__init__()
         self.model = model
         self.encoder = encoder
-
         self.collector = None
-
         self.num_rounds = rounds_per_move
         self.c = c
 

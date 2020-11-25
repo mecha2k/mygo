@@ -2,7 +2,6 @@ import h5py
 from keras.models import Sequential
 from keras.layers.core import Dense
 from keras.callbacks import ModelCheckpoint
-from multiprocessing import freeze_support
 import os
 import time
 
@@ -12,6 +11,7 @@ from dlgo.encoders.alphago import AlphaGoEncoder
 from dlgo.encoders.sevenplane import SevenPlaneEncoder
 from dlgo.agent.predict import DeepLearningAgent, load_prediction_agent
 from dlgo.neuralnet import large
+from dlgo.kerasutil import init_gpus
 
 
 def train_generator():
@@ -21,16 +21,17 @@ def train_generator():
 
     start_time = time.time()
 
-    encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
-    encoder = AlphaGoEncoder()
+    # encoder = AlphaGoEncoder()
+    encoder = SimpleEncoder((go_board_rows, go_board_cols))
+    # encoder = SevenPlaneEncoder((go_board_rows, go_board_cols))
     processor = GoDataProcessor(encoder=encoder.name())
 
     train_gen = processor.load_go_data("train", num_games, use_generator=True)
     test_gen = processor.load_go_data("test", num_games, use_generator=True)
 
-    procpath = processor.data_dir + "/checkpoints"
-    modelfile = procpath + "/my_deep_bot.h5"
+    modelfile = processor.data_dir + "/my_deep_bot.h5"
     if os.path.isfile(modelfile):
+        print("model from trained file...")
         myagent = load_prediction_agent(h5py.File(modelfile, "r"))
         model = myagent.model
     else:
@@ -43,12 +44,13 @@ def train_generator():
         model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
     model.summary()
 
-    epochs = 5
+    epochs = 10
     batch_size = 128
 
     train_num = train_gen.get_num_samples(batch_size, num_classes)
     print("train samples: ", train_num)
 
+    procpath = processor.data_dir + "/checkpoints"
     if not os.path.isdir(procpath):
         os.makedirs(procpath)
     filepath = procpath + "/model_epoch_{epoch:02d}-{loss:.2f}.h5"
@@ -86,4 +88,5 @@ def train_generator():
 
 
 if __name__ == "__main__":
+    init_gpus()
     train_generator()
