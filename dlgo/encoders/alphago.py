@@ -84,17 +84,11 @@ class AlphaGoEncoder(Encoder):
                     liberties = min(new_state.board.get_go_string(point).num_liberties, 8)
                     board_tensor[offset("liberties_after") + liberties][r][c] = 1
 
-                    adjacent_strings = [
-                        game_state.board.get_go_string(nb) for nb in point.neighbors()
-                    ]
+                    adjacent_strings = [game_state.board.get_go_string(nb) for nb in point.neighbors()]
                     capture_count = 0
                     for go_string in adjacent_strings:
                         other_player = game_state.next_player.other
-                        if (
-                            go_string
-                            and go_string.num_liberties == 1
-                            and go_string.color == other_player
-                        ):
+                        if go_string and go_string.num_liberties == 1 and go_string.color == other_player:
                             capture_count += len(go_string.stones)
                     capture_count = min(capture_count, 8)
                     board_tensor[offset("capture_size") + capture_count][r][c] = 1

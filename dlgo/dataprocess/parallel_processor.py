@@ -173,9 +173,7 @@ class GoDataProcessor:
             for setup in sgf.get_root().get_setup_stones():
                 for move in setup:
                     row, col = move
-                    go_board.place_stone(
-                        Player.black, Point(row + 1, col + 1)
-                    )  # black gets handicap
+                    go_board.place_stone(Player.black, Point(row + 1, col + 1))  # black gets handicap
                     move = Move(point=move)
             first_move_done = True
             game_state = GameState(go_board, Player.white, None, move)

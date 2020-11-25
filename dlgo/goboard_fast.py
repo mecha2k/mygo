@@ -17,9 +17,7 @@ def init_neighbor_table(dim):
         for c in range(1, cols + 1):
             p = Point(row=r, col=c)
             full_neighbors = p.neighbors()
-            true_neighbors = [
-                n for n in full_neighbors if 1 <= n.row <= rows and 1 <= n.col <= cols
-            ]
+            true_neighbors = [n for n in full_neighbors if 1 <= n.row <= rows and 1 <= n.col <= cols]
             new_table[p] = true_neighbors
     neighbor_tables[dim] = new_table
 
@@ -103,9 +101,7 @@ class GoString:
         # Return a new string containing all stones in both strings.
         assert string.color == self.color
         combined_stones = self.stones | string.stones
-        return GoString(
-            self.color, combined_stones, (self.liberties | string.liberties) - combined_stones
-        )
+        return GoString(self.color, combined_stones, (self.liberties | string.liberties) - combined_stones)
 
     @property
     def num_liberties(self):

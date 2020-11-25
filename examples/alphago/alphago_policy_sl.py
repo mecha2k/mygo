@@ -68,7 +68,8 @@ def main():
     )
 
     alphago_sl_policy.evaluate(
-        test_generator.generate(batch_size, num_classes), steps=num_test_samples / batch_size,
+        test_generator.generate(batch_size, num_classes),
+        steps=num_test_samples / batch_size,
     )
 
     alphago_sl_agent = DeepLearningAgent(alphago_sl_policy, encoder)

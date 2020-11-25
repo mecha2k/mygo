@@ -98,9 +98,7 @@ class KGSIndex:
     def load_index(self):
         """Create the actual index representation from the previously downloaded or cached html."""
         index_contents = self.create_index_page()
-        split_page = [
-            item for item in index_contents.split('<a href="') if item.startswith("https://")
-        ]
+        split_page = [item for item in index_contents.split('<a href="') if item.startswith("https://")]
         for item in split_page:
             download_url = item.split('">Download')[0]
             if download_url.endswith(".tar.gz"):

@@ -46,9 +46,7 @@ class LearningAgent(object):
         for s, a in zip(self._states, self._actions):
             policy = self._model(s)
             log_policy = K.log(policy)
-            chosen_p = K.gather(
-                K.gather(log_policy, K.constant(0, dtype="int32")), K.constant(a, dtype="int32")
-            )
+            chosen_p = K.gather(K.gather(log_policy, K.constant(0, dtype="int32")), K.constant(a, dtype="int32"))
             gradients = K.gradients(chosen_p, self._model.trainable_weights)
             lr = K.constant(self._learning_rate)
             r = K.constant(reward)

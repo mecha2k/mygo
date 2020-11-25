@@ -26,7 +26,13 @@ Y_train, Y_test = Y[:train_samples], Y[train_samples:]
 
 model = Sequential()
 model.add(
-    Conv2D(48, kernel_size=(3, 3), activation="relu", padding="same", input_shape=input_shape,)
+    Conv2D(
+        48,
+        kernel_size=(3, 3),
+        activation="relu",
+        padding="same",
+        input_shape=input_shape,
+    )
 )
 model.add(Dropout(rate=0.5))
 model.add(Conv2D(48, (3, 3), padding="same", activation="relu"))
@@ -40,7 +46,12 @@ model.summary()
 
 model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
 model.fit(
-    X_train, Y_train, batch_size=128, epochs=10, verbose=1, validation_data=(X_test, Y_test),
+    X_train,
+    Y_train,
+    batch_size=128,
+    epochs=10,
+    verbose=1,
+    validation_data=(X_test, Y_test),
 )
 score = model.evaluate(X_test, Y_test, verbose=0)
 print("Test loss:", score[0])
