@@ -19,7 +19,6 @@ class ValueAgent(Agent):
         self.collector = None
         self.temperature = 0.0
         self.policy = policy
-
         self.last_move_value = 0
 
     def predict(self, game_state):
@@ -75,7 +74,7 @@ class ValueAgent(Agent):
             if not is_point_an_eye(game_state.board, move.point, game_state.next_player):
                 if self.collector is not None:
                     self.collector.record_decision(
-                        state=board_tensor,
+                        state=board_tensors,
                         action=self.encoder.encode_point(move.point),
                     )
                 self.last_move_value = float(values[move_idx])
