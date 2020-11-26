@@ -71,7 +71,7 @@ if __name__ == "__main__":
     init_gpus()
     start_time = time.time()
 
-    num_cases = 10
+    num_cases = 3
     for i in range(num_cases):
         print(f"reinforment learning of {i} cases...")
         reinforcelearning(AlphaGo_dir, i)
