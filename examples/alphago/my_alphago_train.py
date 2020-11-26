@@ -65,12 +65,6 @@ def value_network(workdir, num_cases):
 
 
 if __name__ == "__main__":
-    # import tensorflow as tf
-    #
-    # TF_CONFIG_ = tf.compat.v1.ConfigProto()
-    # TF_CONFIG_.gpu_options.allow_growth = True
-    # sess = tf.compat.v1.Session(config=TF_CONFIG_)
-
     load_dotenv(verbose=True)
     AlphaGo_dir = os.getenv("ALPHAGO_DIR")
 
