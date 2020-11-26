@@ -44,7 +44,7 @@ def train_generator():
         model.compile(loss="categorical_crossentropy", optimizer="sgd", metrics=["accuracy"])
     model.summary()
 
-    epochs = 10
+    epochs = 2
     batch_size = 128
 
     train_num = train_gen.get_num_samples(batch_size, num_classes)
@@ -89,4 +89,5 @@ def train_generator():
 
 if __name__ == "__main__":
     init_gpus()
-    train_generator()
+    for i in range(200):
+        train_generator()
